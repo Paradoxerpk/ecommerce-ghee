@@ -579,3 +579,36 @@ button, input, select, textarea {
 @media (max-width: 576px) {
   .grid-4 { grid-template-columns: 1fr; }
 }
+
+/* Shop Product Card Hover Effects */
+.shop-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -6px rgba(0, 51, 180, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 51, 180, 0.3) !important;
+}
+
+.shop-product-card:hover .card-image-hover {
+  transform: scale(1.06);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* 3-Column Responsive Grid */
+@media (max-width: 1024px) {
+  .products-3-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .products-3-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

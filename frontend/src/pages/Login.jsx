@@ -28,8 +28,12 @@ export default function Login() {
     }
 
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      const loggedInUser = await login(email, password);
+      if (loggedInUser && (loggedInUser.role === 'admin' || loggedInUser.role === 'staff')) {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setErrorMsg(err.message || 'Invalid email or password. Please try again.');
     } finally {

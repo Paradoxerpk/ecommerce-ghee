@@ -8,42 +8,57 @@ export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Initial Load: Load from local storage
+  // Synchronize wishlist with authentication status & user isolation
   useEffect(() => {
-    const localWishlist = localStorage.getItem('saikrishnaghee_wishlist');
-    if (localWishlist) {
-      try {
-        setWishlistItems(JSON.parse(localWishlist));
-      } catch (e) {
+    const fetchUserWishlist = async () => {
+      if (!isAuthenticated || !token) {
+        // Reset state completely when unauthenticated or logged out
+        setWishlistItems([]);
         localStorage.removeItem('saikrishnaghee_wishlist');
+        return;
       }
-    }
-  }, []);
-
-  // 2. Fetch server wishlist when user logs in/authenticates
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      if (!isAuthenticated || !token) return;
 
       setLoading(true);
       try {
-        // Fetch database wishlist items
-        const res = await fetch(`${API_BASE}/products`, {
-          // In real setup, we could have a specific backend route /api/wishlist,
-          // for simplicity we sync and store IDs locally, or load from DB if needed.
-          // Let's implement local storage syncing which is highly reliable for Phase 1.
+        const res = await fetch(`${API_BASE}/wishlist`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
+
+        if (res.ok) {
+          const dbItems = await res.json();
+          setWishlistItems(dbItems.map(item => ({
+            id: item.product_id,
+            name: item.name,
+            slug: item.slug,
+            description: item.description,
+            images: item.images,
+            category_name: item.category_name,
+            variants: item.variants || []
+          })));
+        } else {
+          setWishlistItems([]);
+        }
       } catch (err) {
         console.error('Error fetching database wishlist:', err);
+        setWishlistItems([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchWishlist();
+    fetchUserWishlist();
   }, [isAuthenticated, token]);
 
-  const toggleWishlist = (product) => {
+  const toggleWishlist = async (product) => {
+    // Require authentication
+    if (!isAuthenticated) {
+      alert('Please log in to manage your wishlist.');
+      window.location.href = '/login';
+      return;
+    }
+
     const exists = wishlistItems.some(item => item.id === product.id);
     let updatedWishlist = [];
 
@@ -56,16 +71,28 @@ export const WishlistProvider = ({ children }) => {
         slug: product.slug,
         images: product.images,
         description: product.description,
-        // Save the first variant's details if variants exist
         variants: product.variants || []
       }];
     }
 
     setWishlistItems(updatedWishlist);
-    localStorage.setItem('saikrishnaghee_wishlist', JSON.stringify(updatedWishlist));
+
+    try {
+      await fetch(`${API_BASE}/wishlist/toggle`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ product_id: product.id })
+      });
+    } catch (err) {
+      console.error('Error toggling database wishlist:', err);
+    }
   };
 
   const isInWishlist = (productId) => {
+    if (!isAuthenticated) return false;
     return wishlistItems.some(item => item.id === productId);
   };
 
@@ -77,12 +104,12 @@ export const WishlistProvider = ({ children }) => {
   return (
     <WishlistContext.Provider
       value={{
-        wishlistItems,
+        wishlistItems: isAuthenticated ? wishlistItems : [],
         loading,
         toggleWishlist,
         isInWishlist,
         clearWishlist,
-        wishlistCount: wishlistItems.length
+        wishlistCount: isAuthenticated ? wishlistItems.length : 0
       }}
     >
       {children}

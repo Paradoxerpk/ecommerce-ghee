@@ -11,18 +11,23 @@ export default function Header() {
   const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
 
+  const handleProtectedNav = (e, targetPath, featureName) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      alert(`Please log in to manage your ${featureName}.`);
+      navigate('/login');
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="container nav-container">
         {/* Brand Logo */}
         <Link to="/" className="logo">
-          {/* Custom SVG logo based on client's logo style (yellow leaf/drop drop, blue background vibe) */}
           <svg viewBox="0 0 100 100" className="logo-icon" xmlns="http://www.w3.org/2000/svg">
-            {/* Draw a leaf/ghee droplet containing a spiral */}
             <path d="M50,15 C75,15 80,45 80,60 C80,78 67,90 50,90 C33,90 20,78 20,60 C20,45 25,15 50,15 Z" fill="#F5C518" />
             <path d="M50,22 C70,22 74,48 74,60 C74,74 63,84 50,84 C37,84 26,74 26,60 C26,48 30,22 50,22 Z" fill="#0033B4" />
             <path d="M50,35 C58,35 62,42 62,50 C62,58 56,64 50,64 C44,64 38,58 38,50" fill="none" stroke="#F5C518" strokeWidth="4" strokeLinecap="round" />
-            {/* Dot */}
             <circle cx="50" cy="50" r="5" fill="#F5C518" />
           </svg>
           <div>
@@ -53,13 +58,6 @@ export default function Header() {
               Contact
             </NavLink>
           </li>
-          {isAdmin && (
-            <li>
-              <NavLink to="/admin" className="nav-link" style={{ color: 'var(--secondary-hover)', fontWeight: 'bold' }}>
-                Admin Panel
-              </NavLink>
-            </li>
-          )}
         </ul>
 
         {/* Action Buttons */}
@@ -70,14 +68,24 @@ export default function Header() {
             <span>+91 98765 43210</span>
           </div>
 
-          <Link to="/wishlist" className="nav-action-btn" title="Wishlist">
+          <Link
+            to="/wishlist"
+            onClick={(e) => handleProtectedNav(e, '/wishlist', 'wishlist')}
+            className="nav-action-btn"
+            title="Wishlist"
+          >
             <Heart size={20} />
-            {wishlistCount > 0 && <span className="badge">{wishlistCount}</span>}
+            {isAuthenticated && wishlistCount > 0 && <span className="badge">{wishlistCount}</span>}
           </Link>
 
-          <Link to="/cart" className="nav-action-btn" title="Shopping Cart">
+          <Link
+            to="/cart"
+            onClick={(e) => handleProtectedNav(e, '/cart', 'shopping cart')}
+            className="nav-action-btn"
+            title="Shopping Cart"
+          >
             <ShoppingCart size={20} />
-            {cartCount > 0 && <span className="badge">{cartCount}</span>}
+            {isAuthenticated && cartCount > 0 && <span className="badge">{cartCount}</span>}
           </Link>
 
           {isAuthenticated ? (

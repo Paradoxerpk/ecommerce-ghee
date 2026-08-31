@@ -12,8 +12,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+const path = require('path');
+
 // Body parser
 app.use(express.json());
+
+// Serve static uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Database connection pool setup
 const db = require('./db');
@@ -35,12 +40,16 @@ const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
 const inquiryRoutes = require('./routes/inquiries');
+const reviewRoutes = require('./routes/reviews');
+const wishlistRoutes = require('./routes/wishlist');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // Base route
 app.get('/', (req, res) => {

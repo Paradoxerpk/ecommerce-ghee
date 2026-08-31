@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const adminAuth = require('../middleware/admin');
 
 // @route   POST /api/inquiries
 // @desc    Submit a new contact/inquiry form entry
@@ -35,6 +36,36 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error('Inquiry submission error:', err.message);
     res.status(500).json({ message: 'Server error saving inquiry details' });
+  }
+});
+
+// @route   GET /api/inquiries/admin/all
+// @desc    Fetch all inquiries for admin dashboard
+// @access  Private (Admin/Staff)
+router.get('/admin/all', adminAuth, async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM inquiries ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Fetch inquiries error:', err.message);
+    res.status(500).json({ message: 'Failed to fetch customer inquiries' });
+  }
+});
+
+// @route   PUT /api/inquiries/admin/:id/status
+// @desc    Update inquiry status (unread / read)
+// @access  Private (Admin/Staff)
+router.put('/admin/:id/status', adminAuth, async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const result = await db.query(
+      'UPDATE inquiries SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update status' });
   }
 });
 

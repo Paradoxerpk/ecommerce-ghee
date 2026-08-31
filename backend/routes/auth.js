@@ -13,23 +13,19 @@ const JWT_SECRET = process.env.JWT_SECRET || 'saikrishnaghee_super_secret_sessio
 router.post('/register', async (req, res) => {
   const { name, email, phone, password } = req.body;
 
-  // Simple validation
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Please enter all required fields (name, email, password)' });
   }
 
   try {
-    // Check if user already exists
     const userExistResult = await db.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase().trim()]);
     if (userExistResult.rows.length > 0) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Hash password for safety
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Insert user
     const insertResult = await db.query(
       'INSERT INTO users (name, email, phone, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, phone, role, created_at',
       [name.trim(), email.toLowerCase().trim(), phone ? phone.trim() : null, passwordHash, 'customer']
@@ -37,7 +33,6 @@ router.post('/register', async (req, res) => {
 
     const newUser = insertResult.rows[0];
 
-    // Create token
     const token = jwt.sign(
       { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role },
       JWT_SECRET,
@@ -72,7 +67,6 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    // Check if user exists
     const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase().trim()]);
     if (userResult.rows.length === 0) {
       return res.status(400).json({ message: 'Invalid credentials' });
@@ -80,13 +74,11 @@ router.post('/login', async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // Validate password
     const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Create token
     const token = jwt.sign(
       { id: user.id, name: user.name, email: user.email, role: user.role },
       JWT_SECRET,
@@ -128,6 +120,47 @@ router.get('/me', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Auth verification error:', err.message);
     res.status(500).json({ message: 'Server verification error' });
+  }
+});
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile details (name, phone, password)
+// @access  Private
+router.put('/profile', authMiddleware, async (req, res) => {
+  const { name, phone, password } = req.body;
+
+  try {
+    let passwordHash = null;
+    if (password && password.trim().length >= 6) {
+      const salt = await bcrypt.genSalt(10);
+      passwordHash = await bcrypt.hash(password.trim(), salt);
+    }
+
+    const updateQuery = `
+      UPDATE users
+      SET name = COALESCE($1, name),
+          phone = COALESCE($2, phone),
+          password_hash = COALESCE($3, password_hash),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $4
+      RETURNING id, name, email, phone, role, created_at
+    `;
+
+    const result = await db.query(updateQuery, [
+      name ? name.trim() : null,
+      phone ? phone.trim() : null,
+      passwordHash,
+      req.user.id
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update profile error:', err.message);
+    res.status(500).json({ message: 'Failed to update user profile' });
   }
 });
 

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Tag, X } from 'lucide-react';
+import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Tag, X, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Cart() {
+  const { isAuthenticated } = useAuth();
   const {
     cartItems,
     updateQuantity,
@@ -20,6 +22,23 @@ export default function Cart() {
   const navigate = useNavigate();
   const [couponInput, setCouponInput] = useState('');
   const [couponFeedback, setCouponFeedback] = useState({ success: null, message: '' });
+
+  if (!isAuthenticated) {
+    return (
+      <div className="section" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', maxWidth: '500px', boxShadow: 'var(--shadow-sm)' }}>
+          <User size={48} style={{ color: 'var(--primary-color)', marginBottom: '1rem' }} />
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Login Required</h2>
+          <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+            Please log in to view and manage your shopping cart items.
+          </p>
+          <Link to="/login" className="btn btn-primary" style={{ padding: '0.65rem 1.75rem' }}>
+            Log In Now <ArrowRight size={16} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();

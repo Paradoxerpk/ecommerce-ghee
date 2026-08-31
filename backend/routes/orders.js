@@ -1,28 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const authMiddleware = require('../middleware/auth');
-
-// Helper to verify JWT optionally (for guest checkout tracking)
-const optionalAuth = (req, res, next) => {
-  const authHeader = req.header('Authorization');
-  if (!authHeader) {
-    return next();
-  }
-  const parts = authHeader.split(' ');
-  if (parts.length === 2 && parts[0] === 'Bearer') {
-    try {
-      const decoded = require('jsonwebtoken').verify(
-        parts[1],
-        process.env.JWT_SECRET || 'saikrishnaghee_super_secret_session_token_key_12345'
-      );
-      req.user = decoded;
-    } catch (err) {
-      // Ignore token validation error, proceed as guest
-    }
-  }
-  next();
-};
+const { requireAuth: authMiddleware, optionalAuth } = require('../middleware/auth');
 
 // @route   POST /api/orders/create
 // @desc    Create a new order (pending payment)
