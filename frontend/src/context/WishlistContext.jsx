@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth, API_BASE } from './AuthContext';
+import { useModal } from './ModalContext';
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const { token, isAuthenticated } = useAuth();
+  const { showAlert } = useModal();
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -54,8 +56,15 @@ export const WishlistProvider = ({ children }) => {
   const toggleWishlist = async (product) => {
     // Require authentication
     if (!isAuthenticated) {
-      alert('Please log in to manage your wishlist.');
-      window.location.href = '/login';
+      showAlert({
+        title: 'Authentication Required',
+        message: 'Please log in to manage your wishlist items.',
+        type: 'warning',
+        confirmText: 'Sign In Now',
+        onConfirm: () => {
+          window.location.href = '/login';
+        }
+      });
       return;
     }
 

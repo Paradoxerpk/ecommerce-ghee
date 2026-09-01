@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Calendar, Package, RefreshCw, ShoppingCart } from 'lucide-react';
+import { Calendar, Package, RefreshCw, ShoppingCart, XCircle } from 'lucide-react';
 import { useAuth, API_BASE } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+
+import { useModal } from '../context/ModalContext';
 
 export default function OrdersHistory() {
   const { token, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
+  const { showConfirm, showAlert } = useModal();
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -44,11 +48,8 @@ export default function OrdersHistory() {
     // Re-add items to cart
     for (const item of orderItems) {
       try {
-        // Fetch product variant details to ensure accurate pricing/stock
-        // To keep it simple and rapid for Phase 1 demo, we can search the shop/fallback inventory
-        // and add item directly. Let's map properties correctly and add to cart.
         const mockProduct = {
-          id: item.product_id || 1, // fallback
+          id: item.product_id || 1,
           name: item.name,
           slug: item.slug || 'sai-krishna-pure-cow-ghee',
           images: ['/images/cow_ghee_front.webp']
@@ -58,7 +59,7 @@ export default function OrdersHistory() {
           id: item.variant_id || 1,
           weight_or_volume: item.weight_or_volume,
           price: parseFloat(item.price_per_unit),
-          stock: 100 // Assume stock is valid; CartContext caps if smaller
+          stock: 100
         };
 
         addToCart(mockProduct, mockVariant, item.quantity);
@@ -67,8 +68,52 @@ export default function OrdersHistory() {
       }
     }
 
-    // Redirect to cart
     navigate('/cart');
+  };
+
+  const handleCancelOrder = (orderId) => {
+    showConfirm({
+      title: 'Cancel Order',
+      message: 'Are you sure you want to cancel this order? Purchased item quantities will be returned to product stock.',
+      type: 'warning',
+      confirmText: 'Yes, Cancel Order',
+      cancelText: 'Keep Order',
+      onConfirm: async () => {
+        setCancellingId(orderId);
+        try {
+          const res = await fetch(`${API_BASE}/orders/${orderId}/cancel`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'cancelled' } : o));
+            showAlert({
+              title: 'Order Cancelled',
+              message: 'Your order has been cancelled successfully.',
+              type: 'info'
+            });
+          } else {
+            showAlert({
+              title: 'Cancellation Error',
+              message: data.message || 'Failed to cancel order.',
+              type: 'danger'
+            });
+          }
+        } catch (err) {
+          showAlert({
+            title: 'Error',
+            message: 'Error cancelling order. Please try again.',
+            type: 'danger'
+          });
+        } finally {
+          setCancellingId(null);
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -126,8 +171,8 @@ export default function OrdersHistory() {
 
                   <div>
                     <span style={{
-                      backgroundColor: order.status === 'paid' || order.status === 'delivered' ? 'rgba(46,125,50,0.1)' : 'rgba(0,51,180,0.1)',
-                      color: order.status === 'paid' || order.status === 'delivered' ? '#2e7d32' : 'var(--primary-color)',
+                      backgroundColor: order.status === 'paid' || order.status === 'delivered' ? 'rgba(46,125,50,0.1)' : order.status === 'cancelled' ? 'rgba(239,68,68,0.1)' : 'rgba(0,51,180,0.1)',
+                      color: order.status === 'paid' || order.status === 'delivered' ? '#2e7d32' : order.status === 'cancelled' ? '#ef4444' : 'var(--primary-color)',
                       padding: '0.2rem 0.6rem',
                       borderRadius: '12px',
                       fontSize: '0.75rem',
@@ -139,31 +184,67 @@ export default function OrdersHistory() {
                   </div>
                 </div>
 
-                {/* Items & Reorder action */}
-                <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-                  <div style={{ flexGrow: 1 }}>
+                {/* Card Body: Items List + Dedicated Fixed Footer Row for Action Buttons */}
+                <div style={{ padding: '1.5rem' }}>
+                  <div style={{ marginBottom: '1.25rem' }}>
                     <h4 style={{ fontSize: '0.95rem', color: 'var(--text-dark)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                       <Package size={16} /> Ordered Items
                     </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       {order.items && order.items.map((item, idx) => (
-                        <div key={idx} style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>
-                          <strong>{item.name}</strong> - {item.weight_or_volume} x {item.quantity} (₹{parseFloat(item.price_per_unit).toFixed(2)}/unit)
+                        <div key={idx} style={{ fontSize: '0.9rem', color: 'var(--text-dark)', backgroundColor: '#FAF9F5', padding: '0.6rem 0.85rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                          <strong>{item.name}</strong> — {item.weight_or_volume} x {item.quantity} (₹{parseFloat(item.price_per_unit).toFixed(2)}/unit)
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <Link to={`/order-success/${order.id}`} className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', borderRadius: '6px' }}>
+                  {/* Fixed Footer Row for Buttons: ALWAYS aligned on bottom right */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    paddingTop: '1rem',
+                    borderTop: '1px solid var(--border-color)',
+                    flexWrap: 'wrap'
+                  }}>
+                    <Link
+                      to={`/order-success/${order.id}`}
+                      className="btn btn-outline"
+                      style={{ padding: '0.55rem 1.15rem', fontSize: '0.85rem', borderRadius: '8px' }}
+                    >
                       Track Order
                     </Link>
+
+                    {['pending', 'paid', 'processing'].includes(order.status) && (
+                      <button
+                        onClick={() => handleCancelOrder(order.id)}
+                        disabled={cancellingId === order.id}
+                        style={{
+                          padding: '0.55rem 1.15rem',
+                          fontSize: '0.85rem',
+                          borderRadius: '8px',
+                          border: '1px solid #FCA5A5',
+                          backgroundColor: '#FEF2F2',
+                          color: '#DC2626',
+                          fontWeight: 700,
+                          cursor: cancellingId === order.id ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.35rem'
+                        }}
+                      >
+                        <XCircle size={15} /> {cancellingId === order.id ? 'Cancelling...' : 'Cancel Order'}
+                      </button>
+                    )}
+
                     <button
                       onClick={() => handleReorder(order.items)}
                       className="btn btn-secondary"
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', borderRadius: '6px', display: 'flex', gap: '0.35rem', alignItems: 'center' }}
+                      style={{ padding: '0.55rem 1.15rem', fontSize: '0.85rem', borderRadius: '8px', display: 'flex', gap: '0.35rem', alignItems: 'center' }}
                     >
-                      <RefreshCw size={14} /> Reorder Ghee
+                      <RefreshCw size={15} /> Reorder Ghee
                     </button>
                   </div>
                 </div>

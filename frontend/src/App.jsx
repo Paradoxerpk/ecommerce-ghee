@@ -24,6 +24,8 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import { About, Contact, PrivacyPolicy, TermsConditions, FAQ } from './pages/LegalPages';
 
+import { ModalProvider } from './context/ModalContext';
+
 import ScrollToTop from './components/ScrollToTop';
 
 // Protected Admin Guard
@@ -41,8 +43,9 @@ function ProtectedAdminRoute({ children }) {
 export default function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
+      <ModalProvider>
+        <CartProvider>
+          <WishlistProvider>
           <Router>
             <ScrollToTop />
             <Routes>
@@ -82,6 +85,7 @@ export default function App() {
           </Router>
         </WishlistProvider>
       </CartProvider>
-    </AuthProvider>
+    </ModalProvider>
+  </AuthProvider>
   );
 }

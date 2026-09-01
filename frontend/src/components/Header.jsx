@@ -5,17 +5,27 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 
+import { useModal } from '../context/ModalContext';
+
 export default function Header() {
   const { isAuthenticated, logout, user, isAdmin } = useAuth();
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
+  const { showAlert } = useModal();
   const navigate = useNavigate();
 
   const handleProtectedNav = (e, targetPath, featureName) => {
     if (!isAuthenticated) {
       e.preventDefault();
-      alert(`Please log in to manage your ${featureName}.`);
-      navigate('/login');
+      showAlert({
+        title: 'Authentication Required',
+        message: `Please log in to access your ${featureName}.`,
+        type: 'warning',
+        confirmText: 'Sign In Now',
+        onConfirm: () => {
+          navigate('/login');
+        }
+      });
     }
   };
 

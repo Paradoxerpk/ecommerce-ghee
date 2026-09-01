@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth, API_BASE } from './AuthContext';
+import { useModal } from './ModalContext';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const { token, isAuthenticated } = useAuth();
+  const { showAlert } = useModal();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
@@ -85,8 +87,15 @@ export const CartProvider = ({ children }) => {
   const addToCart = (product, variant, quantity = 1) => {
     // Require authentication
     if (!isAuthenticated) {
-      alert('Please log in to add items to your shopping cart.');
-      window.location.href = '/login';
+      showAlert({
+        title: 'Authentication Required',
+        message: 'Please log in to add items to your shopping cart.',
+        type: 'warning',
+        confirmText: 'Sign In Now',
+        onConfirm: () => {
+          window.location.href = '/login';
+        }
+      });
       return;
     }
 

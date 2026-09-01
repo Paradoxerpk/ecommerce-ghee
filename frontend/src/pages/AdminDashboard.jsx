@@ -498,37 +498,81 @@ export default function AdminDashboard() {
                     <thead>
                       <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B', textAlign: 'left' }}>
                         <th style={{ padding: '0.75rem' }}>Order ID</th>
-                        <th style={{ padding: '0.75rem' }}>Customer</th>
+                        <th style={{ padding: '0.75rem' }}>Customer Details</th>
+                        <th style={{ padding: '0.75rem' }}>Items & Shipping</th>
                         <th style={{ padding: '0.75rem' }}>Date</th>
-                        <th style={{ padding: '0.75rem' }}>Amount</th>
+                        <th style={{ padding: '0.75rem' }}>Total Amount</th>
                         <th style={{ padding: '0.75rem' }}>Status</th>
-                        <th style={{ padding: '0.75rem', textAlign: 'right' }}>Update</th>
+                        <th style={{ padding: '0.75rem', textAlign: 'right' }}>Update Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredOrders.map((order) => (
                         <tr key={order.id} style={{ borderBottom: '1px solid #E2E8F0' }}>
-                          <td style={{ padding: '0.85rem 0.75rem', fontWeight: 700 }}>#{order.id.slice(0, 8)}</td>
+                          <td style={{ padding: '0.85rem 0.75rem', fontWeight: 700 }}>
+                            #{order.id.slice(0, 8)}
+                          </td>
                           <td style={{ padding: '0.85rem 0.75rem' }}>
-                            <div style={{ fontWeight: 600 }}>{order.customer_name}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{order.customer_email}</div>
+                            <div style={{ fontWeight: 700, color: '#0F172A' }}>
+                              {order.customer_name || order.registered_name || order.guest_name || 'Customer'}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                              {order.customer_email || order.registered_email || order.guest_email || 'guest@saikrishnaghee.com'}
+                            </div>
+                            {(order.contact_number || order.customer_phone) && (
+                              <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+                                📞 {order.contact_number || order.customer_phone}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ padding: '0.85rem 0.75rem' }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>
+                              {Array.isArray(order.items) && order.items.length > 0 ? (
+                                order.items.map((it, i) => (
+                                  <div key={i} style={{ marginBottom: '0.2rem' }}>
+                                    • {it.quantity}x {it.name} ({it.weight_or_volume || 'Jar'})
+                                  </div>
+                                ))
+                              ) : (
+                                <span style={{ color: '#94A3B8' }}>Ghee Order Items</span>
+                              )}
+                            </div>
+                            {order.shipping_address && (
+                              <div style={{ fontSize: '0.725rem', color: '#64748B', marginTop: '0.35rem', fontStyle: 'italic' }}>
+                                📍 {order.shipping_address}
+                              </div>
+                            )}
                           </td>
                           <td style={{ padding: '0.85rem 0.75rem', color: '#64748B', fontSize: '0.8rem' }}>
-                            {new Date(order.created_at).toLocaleDateString()}
+                            {new Date(order.created_at).toLocaleDateString()} <br />
+                            <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+                              {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
                           </td>
-                          <td style={{ padding: '0.85rem 0.75rem', fontWeight: 800 }}>₹{parseFloat(order.total_amount).toFixed(2)}</td>
-                          <td style={{ padding: '0.85rem 0.75rem' }}>{renderBadge(order.status)}</td>
+                          <td style={{ padding: '0.85rem 0.75rem' }}>
+                            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0F172A' }}>
+                              ₹{parseFloat(order.total_amount || 0).toFixed(2)}
+                            </div>
+                            <span style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>
+                              {order.payment_method || 'cod'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '0.85rem 0.75rem' }}>
+                            {renderBadge(order.status)}
+                          </td>
                           <td style={{ padding: '0.85rem 0.75rem', textAlign: 'right' }}>
                             <select
                               value={order.status}
                               disabled={updatingOrderId === order.id}
                               onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
                               style={{
-                                padding: '0.35rem 0.5rem',
-                                borderRadius: '4px',
+                                padding: '0.4rem 0.6rem',
+                                borderRadius: '6px',
                                 border: '1px solid #CBD5E1',
                                 fontSize: '0.8rem',
-                                fontWeight: 600
+                                fontWeight: 700,
+                                backgroundColor: '#FFF',
+                                cursor: 'pointer'
                               }}
                             >
                               <option value="pending">Pending</option>
