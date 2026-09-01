@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Star, ShoppingBag, Heart, Shield, Check, AlertTriangle, ArrowLeft, Send, CheckCircle } from 'lucide-react';
+import { Star, ShoppingBag, Heart, Shield, Check, AlertTriangle, ArrowLeft, Send, CheckCircle, ChevronRight, ArrowRight } from 'lucide-react';
 import { API_BASE, useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+
+// Helper to format clean ~15-20 word descriptions ending with ....
+const truncateDescription = (desc, maxWords = 18) => {
+  if (!desc) return '';
+  const clean = desc.trim();
+  const words = clean.split(/\s+/);
+  if (words.length <= maxWords) return clean;
+  return words.slice(0, maxWords).join(' ') + '....';
+};
 
 // Local Fallback list
 const FALLBACK_PRODUCTS = [
@@ -12,13 +21,13 @@ const FALLBACK_PRODUCTS = [
     name: 'Sai Krishna Pure Cow Ghee',
     slug: 'sai-krishna-pure-cow-ghee',
     category_name: 'Cow Ghee',
-    description: 'Sai Krishna Pure Cow Ghee is made from fresh cow milk, ensuring a rich golden texture, divine aroma, and traditional homemade taste. Rich in natural nutrients, vitamins, and antioxidants, it is an essential ingredient for a healthy daily diet and traditional cooking.',
-    images: ['/images/cow_ghee_front.webp', '/images/cow_ghee_back.webp'],
+    description: 'Sai Krishna Pure Cow Ghee is made from fresh cow milk, ensuring a rich golden texture, divine aroma, and traditional homemade taste.',
+    images: ['/uploads/product-1788196192064-385206.jpeg'],
     variants: [
       { id: 1, weight_or_volume: '100g Pouch', price: '75.00', stock: 500, sku: 'SKG-COW-100P' },
       { id: 2, weight_or_volume: '250g Jar', price: '185.00', stock: 200, sku: 'SKG-COW-250J' },
       { id: 3, weight_or_volume: '500g Jar', price: '360.00', stock: 150, sku: 'SKG-COW-500J' },
-      { id: 4, weight_or_volume: '1L Jar', price: '700.00', stock: 0, sku: 'SKG-COW-1000J' }
+      { id: 4, weight_or_volume: '1L Jar', price: '700.00', stock: 100, sku: 'SKG-COW-1000J' }
     ],
     reviews: [
       { id: 1, user_name: 'Rajesh Kumar', rating: 5, comment: 'Authentic divine aroma! The granular texture is top notch and reminds me of homemade ghee.', created_at: '2026-08-15' },
@@ -30,8 +39,8 @@ const FALLBACK_PRODUCTS = [
     name: 'Sai Krishna Premium Buffalo Ghee',
     slug: 'sai-krishna-premium-buffalo-ghee',
     category_name: 'Buffalo Ghee',
-    description: 'Crafted from high-quality buffalo milk, Sai Krishna Buffalo Ghee features a distinctive granular white texture, rich flavor, and high smoke point. Excellent for traditional Indian sweets, deep-frying, and enhancing everyday meals.',
-    images: ['/images/buffalo_ghee_front.webp'],
+    description: 'Crafted from high-quality buffalo milk, Sai Krishna Buffalo Ghee features a distinctive granular white texture, rich flavor, and high smoke point.',
+    images: ['/uploads/product-1788196197866-378062.jpg'],
     variants: [
       { id: 5, weight_or_volume: '500g Jar', price: '380.00', stock: 100, sku: 'SKG-BUF-500J' },
       { id: 6, weight_or_volume: '1L Jar', price: '740.00', stock: 75, sku: 'SKG-BUF-1000J' }
@@ -45,8 +54,8 @@ const FALLBACK_PRODUCTS = [
     name: 'Sai Krishna Vedic A2 Cow Ghee (Bilona Method)',
     category_name: 'Premium A2 Ghee',
     slug: 'sai-krishna-vedic-a2-cow-ghee',
-    description: 'Our super premium Vedic A2 Ghee is prepared using the ancient Bilona method — curdling milk, churning the curd to butter, and slowly boiling it. Sourced exclusively from purebred native cows, it offers unmatched medicinal values, deep aroma, and an exquisite granular structure.',
-    images: ['/images/a2_ghee_front.webp'],
+    description: 'Our super premium Vedic A2 Ghee is prepared using the ancient Bilona method — curdling milk, churning the curd to butter, and slowly boiling it.',
+    images: ['/images/ghee_hero.jpg'],
     variants: [
       { id: 7, weight_or_volume: '250g Glass Jar', price: '450.00', stock: 50, sku: 'SKG-A2-250G' },
       { id: 8, weight_or_volume: '500g Glass Jar', price: '850.00', stock: 40, sku: 'SKG-A2-500G' },
@@ -68,6 +77,10 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
   const [quantity, setQuantity] = useState(1);
+
+  // Related Collection State
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
   // Review Submission State
   const [newRating, setNewRating] = useState(5);
@@ -121,6 +134,32 @@ export default function ProductDetail() {
 
     fetchProductDetails();
   }, [slug]);
+
+  // Fetch Related Products for Collection Section
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/products`);
+        if (res.ok) {
+          const all = await res.json();
+          setRelatedProducts(all.filter(p => p.slug !== slug));
+        } else {
+          setRelatedProducts(FALLBACK_PRODUCTS.filter(p => p.slug !== slug));
+        }
+      } catch (err) {
+        setRelatedProducts(FALLBACK_PRODUCTS.filter(p => p.slug !== slug));
+      }
+    };
+
+    fetchRelatedProducts();
+  }, [slug]);
+
+  const handleSelectVariantForProduct = (productId, variant) => {
+    setSelectedVariantsMap(prev => ({
+      ...prev,
+      [productId]: variant
+    }));
+  };
 
   if (loading) {
     return (
@@ -207,10 +246,10 @@ export default function ProductDetail() {
           <ArrowLeft size={16} /> Back to Catalog
         </Link>
 
-        {/* Product Details Grid */}
+        {/* 1. Product Details Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'start' }} className="product-detail-grid">
           
-          {/* 1. Left Gallery Column */}
+          {/* Gallery Column */}
           <div>
             <div style={{
               width: '100%',
@@ -257,7 +296,7 @@ export default function ProductDetail() {
             )}
           </div>
 
-          {/* 2. Right Info Column */}
+          {/* Info Column */}
           <div>
             <span style={{ fontSize: '0.85rem', color: 'var(--secondary-color)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
               {product.category_name || 'Sai Krishna Pure Ghee'}
@@ -410,8 +449,238 @@ export default function ProductDetail() {
           </div>
         </div>
 
+        {/* 2. Featured Ghee Collection Section (Inserted In-Between Product Detail & Reviews) */}
+        {relatedProducts.length > 0 && (
+          <section style={{ marginTop: '4rem', borderTop: '1px solid var(--border-color)', paddingTop: '3.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                  STOREFRONT CATALOG
+                </span>
+                <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginTop: '0.3rem' }}>
+                  Featured Ghee Collection
+                </h2>
+              </div>
+              <Link
+                to="/shop"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  color: 'var(--primary-color)',
+                  fontWeight: 800,
+                  fontSize: '0.95rem',
+                  textDecoration: 'none'
+                }}
+              >
+                Explore Full Shop <ChevronRight size={18} />
+              </Link>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }} className="products-3-grid">
+              {relatedProducts.map((p) => {
+                const variants = Array.isArray(p.variants) && p.variants.length > 0
+                  ? p.variants
+                  : [{ id: 99, weight_or_volume: '500g Jar', price: '350.00', stock: 50 }];
+
+                const activeVariant = selectedVariantsMap[p.id] || variants[0];
+                const inWish = isInWishlist(p.id);
+                const mainImage = Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '/images/cow_ghee_front.webp';
+
+                return (
+                  <div
+                    key={p.id}
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: '1px solid var(--border-color)',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      boxShadow: 'var(--shadow-sm)',
+                      transition: 'all 0.25s ease'
+                    }}
+                    className="shop-product-card"
+                  >
+                    {/* Product Image Container */}
+                    <div style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '240px',
+                      backgroundColor: 'var(--bg-cream)',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderBottom: '1px solid var(--border-color)'
+                    }}>
+                      <span style={{
+                        position: 'absolute',
+                        top: '12px',
+                        left: '12px',
+                        backgroundColor: 'var(--primary-color)',
+                        color: '#fff',
+                        padding: '0.2rem 0.65rem',
+                        borderRadius: '20px',
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        zIndex: 2
+                      }}>
+                        {p.category_name || 'Pure Ghee'}
+                      </span>
+
+                      <button
+                        onClick={() => toggleWishlist(p)}
+                        style={{
+                          position: 'absolute',
+                          top: '12px',
+                          right: '12px',
+                          width: '34px',
+                          height: '34px',
+                          borderRadius: '50%',
+                          backgroundColor: '#fff',
+                          border: '1px solid var(--border-color)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          color: inWish ? '#ef4444' : 'var(--text-light)',
+                          zIndex: 2
+                        }}
+                        title="Toggle Wishlist"
+                      >
+                        <Heart size={18} fill={inWish ? "currentColor" : "none"} />
+                      </button>
+
+                      <Link to={`/product/${p.slug}`} style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
+                        <img
+                          src={mainImage}
+                          alt={p.name}
+                          style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}
+                          className="card-image-hover"
+                          onError={(e) => { e.target.src = '/images/cow_ghee_front.webp'; }}
+                        />
+                      </Link>
+                    </div>
+
+                    {/* Product Details Body */}
+                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      
+                      {/* Rating Stars Summary */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', color: '#f59e0b' }}>
+                          <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        </div>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>5.0</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
+                          ({p.reviews ? p.reviews.length : 5} reviews)
+                        </span>
+                      </div>
+
+                      <Link to={`/product/${p.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>
+                          {p.name}
+                        </h3>
+                      </Link>
+
+                      <p style={{
+                        fontSize: '0.875rem',
+                        color: 'var(--text-light)',
+                        lineHeight: 1.5,
+                        margin: '0.4rem 0 1rem 0',
+                        minHeight: '2.8em'
+                      }}>
+                        {truncateDescription(p.description, 18)}
+                      </p>
+
+                      {/* Package Options */}
+                      <div style={{ marginBottom: '1rem' }}>
+                        <span style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', display: 'block', marginBottom: '0.35rem' }}>
+                          PACKAGE OPTIONS:
+                        </span>
+                        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                          {variants.map(v => (
+                            <button
+                              key={v.id}
+                              onClick={() => handleSelectVariantForProduct(p.id, v)}
+                              style={{
+                                padding: '0.25rem 0.6rem',
+                                borderRadius: '16px',
+                                fontSize: '0.725rem',
+                                fontWeight: 700,
+                                border: activeVariant.id === v.id ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                                backgroundColor: activeVariant.id === v.id ? 'rgba(0, 51, 180, 0.08)' : '#FFF',
+                                color: activeVariant.id === v.id ? 'var(--primary-color)' : 'var(--text-dark)',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              {v.weight_or_volume}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Price & Action */}
+                      <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', display: 'block' }}>{activeVariant.weight_or_volume}</span>
+                          <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--primary-color)' }}>
+                            ₹{parseFloat(activeVariant.price).toFixed(2)}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                          <button
+                            onClick={() => addToCart(p, activeVariant, 1)}
+                            style={{
+                              backgroundColor: '#F5C518',
+                              color: '#0033B4',
+                              border: 'none',
+                              padding: '0.55rem 0.85rem',
+                              borderRadius: '8px',
+                              fontWeight: 900,
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem'
+                            }}
+                          >
+                            <ShoppingBag size={14} /> + Cart
+                          </button>
+
+                          <Link
+                            to={`/product/${p.slug}`}
+                            style={{
+                              backgroundColor: '#0033B4',
+                              color: '#FFF',
+                              padding: '0.55rem 0.85rem',
+                              borderRadius: '8px',
+                              fontWeight: 700,
+                              fontSize: '0.8rem',
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.2rem'
+                            }}
+                          >
+                            View <ArrowRight size={13} />
+                          </Link>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* 3. Product Reviews & Ratings Section */}
-        <section style={{ marginTop: '4rem', borderTop: '1px solid var(--border-color)', paddingTop: '3rem' }}>
+        <section style={{ marginTop: '4rem', borderTop: '1px solid var(--border-color)', paddingTop: '3.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-color)', margin: 0, fontWeight: 800 }}>

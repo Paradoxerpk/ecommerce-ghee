@@ -5,6 +5,15 @@ import { API_BASE } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 
+// Helper to format clean ~15-20 word descriptions ending with ....
+const truncateDescription = (desc, maxWords = 18) => {
+  if (!desc) return '';
+  const clean = desc.trim();
+  const words = clean.split(/\s+/);
+  if (words.length <= maxWords) return clean;
+  return words.slice(0, maxWords).join(' ') + '....';
+};
+
 // Standard fallback if backend server is unavailable
 const FALLBACK_PRODUCTS = [
   {
@@ -591,17 +600,13 @@ export default function Shop() {
 
                         {/* Description */}
                         <p style={{
-                          fontSize: '0.825rem',
+                          fontSize: '0.875rem',
                           color: 'var(--text-light)',
-                          lineHeight: '1.4',
-                          margin: '0 0 1rem 0',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          height: '2.3em'
+                          lineHeight: '1.5',
+                          margin: '0.4rem 0 1rem 0',
+                          minHeight: '2.8em'
                         }}>
-                          {product.description}
+                          {truncateDescription(product.description, 18)}
                         </p>
 
                         {/* Interactive Weight/Variant Selector Pills */}

@@ -24,6 +24,8 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import { About, Contact, PrivacyPolicy, TermsConditions, FAQ } from './pages/LegalPages';
 
+import ScrollToTop from './components/ScrollToTop';
+
 // Protected Admin Guard
 function ProtectedAdminRoute({ children }) {
   const { isAuthenticated, isAdmin, loading } = useAuth();
@@ -42,6 +44,7 @@ export default function App() {
       <CartProvider>
         <WishlistProvider>
           <Router>
+            <ScrollToTop />
             <Routes>
               {/* Consumer Storefront Routes (Wrapped in StoreLayout) */}
               <Route element={<StoreLayout />}>

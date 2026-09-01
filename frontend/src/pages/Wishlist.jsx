@@ -5,6 +5,14 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
+const truncateDescription = (desc, maxWords = 18) => {
+  if (!desc) return '';
+  const clean = desc.trim();
+  const words = clean.split(/\s+/);
+  if (words.length <= maxWords) return clean;
+  return words.slice(0, maxWords).join(' ') + '....';
+};
+
 export default function Wishlist() {
   const { isAuthenticated } = useAuth();
   const { wishlistItems, toggleWishlist, clearWishlist } = useWishlist();
@@ -111,8 +119,14 @@ export default function Wishlist() {
 
                 <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-dark)' }}>{product.name}</h3>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: '1.4', marginBottom: '1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {product.description}
+                  <p style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--text-light)',
+                    lineHeight: '1.5',
+                    margin: '0.4rem 0 1rem 0',
+                    minHeight: '2.8em'
+                  }}>
+                    {truncateDescription(product.description, 18)}
                   </p>
 
                   <div style={{ marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
