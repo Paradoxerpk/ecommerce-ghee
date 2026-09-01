@@ -318,6 +318,77 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// @route   PUT /api/orders/:id/cancel
+// @desc    Cancel an order by user (if pending, paid, or processing) & restore stock
+// @access  Private
+router.put('/:id/cancel', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const client = await db.pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // 1. Fetch order for this user
+    const orderRes = await client.query(
+      'SELECT id, status, user_id FROM orders WHERE id = $1 FOR UPDATE',
+      [id]
+    );
+
+    if (orderRes.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    const order = orderRes.rows[0];
+
+    // Ensure order belongs to logged-in user (unless admin)
+    if (order.user_id !== req.user.id && req.user.role !== 'admin' && req.user.role !== 'staff') {
+      await client.query('ROLLBACK');
+      return res.status(403).json({ message: 'Forbidden. You do not own this order' });
+    }
+
+    // Check if order is in cancellable state
+    const cancellableStatuses = ['pending', 'paid', 'processing'];
+    if (!cancellableStatuses.includes(order.status)) {
+      await client.query('ROLLBACK');
+      return res.status(400).json({ 
+        message: `Order cannot be cancelled because it is already ${order.status}` 
+      });
+    }
+
+    // 2. Restore item stocks
+    const itemsRes = await client.query(
+      'SELECT variant_id, quantity FROM order_items WHERE order_id = $1',
+      [id]
+    );
+
+    for (const item of itemsRes.rows) {
+      if (item.variant_id) {
+        await client.query(
+          'UPDATE product_variants SET stock = stock + $1 WHERE id = $2',
+          [item.quantity, item.variant_id]
+        );
+      }
+    }
+
+    // 3. Mark order status as cancelled
+    await client.query(
+      "UPDATE orders SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
+      [id]
+    );
+
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Order cancelled successfully' });
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Cancel order error:', err.message);
+    res.status(500).json({ message: 'Server error cancelling order' });
+  } finally {
+    client.release();
+  }
+});
+
 // Admin routes (included in orders for modularity)
 
 // @route   GET /api/orders/admin/queue
@@ -331,10 +402,13 @@ router.get('/admin/queue', authMiddleware, async (req, res) => {
   const { status } = req.query;
 
   try {
-    let query = `
-      SELECT o.id, o.guest_name, o.guest_email, o.guest_phone, o.status, o.total_amount,
-             o.shipping_address, o.contact_number, o.payment_method, o.payment_status, o.created_at,
-             u.name as registered_name, u.email as registered_email,
+    let baseQuery = `
+      SELECT o.id,
+             COALESCE(u.name, o.guest_name, 'Guest Customer') AS customer_name,
+             COALESCE(u.email, o.guest_email, 'guest@saikrishnaghee.com') AS customer_email,
+             COALESCE(u.phone, o.guest_phone, o.contact_number) AS customer_phone,
+             o.status, o.total_amount, o.shipping_address, o.contact_number,
+             o.delivery_preference, o.payment_method, o.payment_status, o.payment_id, o.created_at,
              json_agg(
                json_build_object(
                  'name', p.name,
@@ -344,6 +418,7 @@ router.get('/admin/queue', authMiddleware, async (req, res) => {
                )
              ) AS items
       FROM orders o
+      LEFT JOIN users u ON o.user_id = u.id
       JOIN order_items oi ON o.id = oi.order_id
       LEFT JOIN products p ON oi.product_id = p.id
       LEFT JOIN product_variants pv ON oi.variant_id = pv.id
@@ -351,13 +426,13 @@ router.get('/admin/queue', authMiddleware, async (req, res) => {
 
     const queryParams = [];
     if (status && status !== 'all') {
-      query += ` WHERE o.status = $1`;
+      baseQuery += ` WHERE o.status = $1`;
       queryParams.push(status);
     }
 
-    query += ` GROUP BY o.id, u.name, u.email ORDER BY o.created_at DESC`;
+    baseQuery += ` GROUP BY o.id, u.id ORDER BY o.created_at DESC`;
 
-    const result = await db.query(query, queryParams);
+    const result = await db.query(baseQuery, queryParams);
     res.json(result.rows);
   } catch (err) {
     console.error('Fetch admin orders error:', err.message);
