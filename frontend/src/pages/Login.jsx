@@ -13,7 +13,6 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Redirect target if redirected from checkout, etc.
   const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
@@ -42,69 +41,49 @@ export default function Login() {
   };
 
   return (
-    <div className="section" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
-      <div className="container" style={{ maxWidth: '420px' }}>
-        <div style={{
-          backgroundColor: '#fff',
-          borderRadius: '16px',
-          border: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-md)',
-          padding: '2.5rem'
-        }}>
-          <h2 style={{ fontSize: '2rem', textAlign: 'center', color: 'var(--primary-color)', marginBottom: '0.5rem' }}>
+    <div className="py-12 sm:py-20 min-h-[80vh] flex items-center bg-[#FAF9F6]">
+      <div className="container mx-auto px-4 max-w-md">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-6 sm:p-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center font-serif text-[#0033B4] mb-1">
             Welcome Back
           </h2>
-          <p style={{ textAlign: 'center', color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+          <p className="text-center text-slate-500 text-xs sm:text-sm mb-6">
             Login to track orders and manage details
           </p>
 
           {errorMsg && (
-            <div style={{
-              backgroundColor: 'rgba(255, 59, 48, 0.05)',
-              border: '1px solid #ff3b30',
-              color: '#ff3b30',
-              padding: '0.75rem',
-              borderRadius: '8px',
-              marginBottom: '1.5rem',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem'
-            }}>
+            <div className="bg-red-50 border border-red-400 text-red-600 p-3 rounded-xl mb-5 text-xs font-bold flex items-center gap-2">
               <AlertTriangle size={16} />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+              <div className="relative">
+                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="email"
-                  className="form-control"
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
-              <label className="form-label">Password</label>
-              <div style={{ position: 'relative' }}>
-                <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+              <div className="relative">
+                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="password"
-                  className="form-control"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   required
                 />
               </div>
@@ -113,16 +92,15 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary"
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '30px', fontSize: '1rem' }}
+              className="btn btn-primary w-full py-3 text-sm font-black mt-2"
             >
               {loading ? 'Logging in...' : 'Sign In'}
             </button>
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.85rem', color: 'var(--text-light)' }}>
+          <div className="text-center mt-6 text-xs text-slate-500">
             Don't have an account?{' '}
-            <Link to="/register" style={{ color: 'var(--primary-color)', fontWeight: 600, textDecoration: 'underline' }}>
+            <Link to="/register" className="text-[#0033B4] font-bold underline">
               Register here
             </Link>
           </div>

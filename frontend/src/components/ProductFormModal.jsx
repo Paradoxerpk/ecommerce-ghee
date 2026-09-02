@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Package, Check, AlertCircle, Upload, Image as ImageIcon, Loader } from 'lucide-react';
+import { X, Plus, Trash2, Package, AlertCircle, Upload, Loader } from 'lucide-react';
 import { API_BASE, useAuth } from '../context/AuthContext';
 
 export default function ProductFormModal({ isOpen, onClose, onSave, productToEdit, categories }) {
@@ -50,7 +50,6 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
         setVariants([{ weight_or_volume: '500g Jar', price: '350.00', stock: '50', sku: '', active: true }]);
       }
     } else {
-      // Reset form for fresh product creation
       setName('');
       setCategoryId(categories && categories.length > 0 ? categories[0].id : 1);
       setDescription('');
@@ -64,7 +63,6 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
 
   if (!isOpen) return null;
 
-  // File Upload Handler
   const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -99,8 +97,6 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
       setError(err.message || 'Failed to upload image file');
     } finally {
       setUploadingImage(false);
-      // Reset file input value
-      e.target.value = '';
     }
   };
 
@@ -110,23 +106,15 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
     setCustomUrlInput('');
   };
 
-  const handleRemoveImage = (index) => {
-    setImagesList(prev => prev.filter((_, i) => i !== index));
+  const handleRemoveImage = (indexToRemove) => {
+    setImagesList(prev => prev.filter((_, idx) => idx !== indexToRemove));
   };
 
   const handleAddVariant = () => {
     setVariants(prev => [
       ...prev,
-      { weight_or_volume: '1L Jar', price: '700.00', stock: '25', sku: '', active: true }
+      { weight_or_volume: '', price: '', stock: '50', sku: '', active: true }
     ]);
-  };
-
-  const handleRemoveVariant = (index) => {
-    if (variants.length <= 1) {
-      alert('A product must have at least one variant size/price option.');
-      return;
-    }
-    setVariants(prev => prev.filter((_, idx) => idx !== index));
   };
 
   const handleVariantChange = (index, field, value) => {
@@ -137,17 +125,36 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
     });
   };
 
+  const handleRemoveVariant = (indexToRemove) => {
+    if (variants.length <= 1) {
+      setError('Product must contain at least one package size/variant.');
+      return;
+    }
+    setVariants(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     if (!name.trim()) {
-      setError('Product name is required.');
+      setError('Product Name is required.');
       return;
     }
     if (!description.trim()) {
-      setError('Product description is required.');
+      setError('Product Description is required.');
       return;
+    }
+    if (variants.length === 0) {
+      setError('At least one variant must be defined.');
+      return;
+    }
+    for (let i = 0; i < variants.length; i++) {
+      const v = variants[i];
+      if (!v.weight_or_volume || !v.price) {
+        setError(`Variant #${i + 1} requires weight and price.`);
+        return;
+      }
     }
     if (imagesList.length === 0) {
       setError('At least one product image is required.');
@@ -179,93 +186,37 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.65)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 1000,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '1.5rem'
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#fff',
-          borderRadius: '16px',
-          width: '100%',
-          maxWidth: '850px',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-          border: '1px solid var(--border-color)',
-          display: 'flex',
-          flexDirection: 'column'
-        }}
-      >
+    <div className="fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 flex flex-col">
         {/* Modal Header */}
-        <div
-          style={{
-            padding: '1.5rem 2rem',
-            borderBottom: '1px solid var(--border-color)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            backgroundColor: 'var(--bg-cream)'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Package size={22} style={{ color: 'var(--primary-color)' }} />
-            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800 }}>
+        <div className="p-5 sm:p-6 border-b border-slate-200 flex justify-between items-center bg-[#FCFAF2] sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            <Package size={22} className="text-[#0033B4]" />
+            <h2 className="m-0 text-lg sm:text-xl font-extrabold text-slate-900 font-serif">
               {productToEdit ? `Edit Product: ${productToEdit.name}` : 'Add New Product'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-light)',
-              padding: '0.25rem',
-              borderRadius: '50%'
-            }}
+            className="p-1 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer"
           >
             <X size={24} />
           </button>
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-6">
           {error && (
-            <div
-              style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid #ef4444',
-                color: '#ef4444',
-                padding: '0.85rem 1rem',
-                borderRadius: '8px',
-                fontSize: '0.9rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
-            >
+            <div className="bg-red-50 border border-red-400 text-red-600 p-3 rounded-xl text-xs font-bold flex items-center gap-2">
               <AlertCircle size={18} />
               <span>{error}</span>
             </div>
           )}
 
           {/* Basic Details Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.25rem' }}>
-            <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+            <div className="sm:col-span-8">
+              <label className="block font-bold text-xs text-slate-700 mb-1">
                 Product Name *
               </label>
               <input
@@ -274,31 +225,18 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g. Sai Krishna Organic Pure Cow Ghee"
                 required
-                style={{
-                  width: '100%',
-                  padding: '0.65rem 0.85rem',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-color)',
-                  fontSize: '0.95rem'
-                }}
+                className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
               />
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+            <div className="sm:col-span-4">
+              <label className="block font-bold text-xs text-slate-700 mb-1">
                 Category *
               </label>
               <select
                 value={categoryId}
                 onChange={e => setCategoryId(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.65rem 0.85rem',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-color)',
-                  fontSize: '0.95rem',
-                  backgroundColor: '#fff'
-                }}
+                className="w-full p-2.5 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:border-[#0033B4]"
               >
                 {categories && categories.length > 0 ? (
                   categories.map(c => (
@@ -319,7 +257,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
 
           {/* Description */}
           <div>
-            <label style={{ display: 'block', fontWeight: 700, fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+            <label className="block font-bold text-xs text-slate-700 mb-1">
               Full Product Description *
             </label>
             <textarea
@@ -328,37 +266,30 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
               onChange={e => setDescription(e.target.value)}
               placeholder="Describe the product purity, traditional preparation method, taste profile, and health benefits..."
               required
-              style={{
-                width: '100%',
-                padding: '0.65rem 0.85rem',
-                borderRadius: '8px',
-                border: '1px solid var(--border-color)',
-                fontSize: '0.9rem',
-                lineHeight: '1.5'
-              }}
+              className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
             />
           </div>
 
           {/* Image Upload & Active State Section */}
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div className="border-t border-slate-200 pt-5 space-y-4">
+            <div className="flex justify-between items-center flex-wrap gap-2">
               <div>
-                <label style={{ display: 'block', fontWeight: 800, fontSize: '0.95rem', margin: 0 }}>
+                <label className="block font-extrabold text-sm text-slate-900 m-0">
                   Product Images Management *
                 </label>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
+                <span className="text-xs text-slate-500">
                   Upload image files directly from your computer or provide image URLs.
                 </span>
               </div>
 
               {/* Active Toggle Switch */}
-              <div style={{ backgroundColor: 'var(--bg-cream)', padding: '0.4rem 0.85rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem' }}>
+              <div className="bg-amber-50 p-2 rounded-lg border border-amber-200">
+                <label className="flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-800">
                   <input
                     type="checkbox"
                     checked={active}
                     onChange={e => setActive(e.target.checked)}
-                    style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)' }}
+                    className="accent-[#0033B4]"
                   />
                   Active (Live on Store)
                 </label>
@@ -366,24 +297,9 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
             </div>
 
             {/* Upload Action Bar */}
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
               
-              {/* File Upload Button */}
-              <label
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: 'var(--primary-color)',
-                  color: '#fff',
-                  padding: '0.6rem 1.25rem',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: 700,
-                  cursor: uploadingImage ? 'wait' : 'pointer',
-                  boxShadow: 'var(--shadow-sm)'
-                }}
-              >
+              <label className="btn btn-primary px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shrink-0">
                 {uploadingImage ? <Loader size={18} className="spin" /> : <Upload size={18} />}
                 {uploadingImage ? 'Uploading Image...' : 'Upload Image File'}
                 <input
@@ -392,37 +308,23 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
                   multiple
                   onChange={handleFileSelect}
                   disabled={uploadingImage}
-                  style={{ display: 'none' }}
+                  className="hidden"
                 />
               </label>
 
               {/* Manual URL Input */}
-              <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minWidth: '260px' }}>
+              <div className="flex gap-2 flex-1">
                 <input
                   type="text"
                   value={customUrlInput}
                   onChange={e => setCustomUrlInput(e.target.value)}
                   placeholder="Or paste image URL (e.g. /images/cow_ghee_front.webp)"
-                  style={{
-                    flex: 1,
-                    padding: '0.55rem 0.75rem',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    fontSize: '0.85rem'
-                  }}
+                  className="flex-1 p-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-[#0033B4]"
                 />
                 <button
                   type="button"
                   onClick={handleAddCustomUrl}
-                  style={{
-                    padding: '0.55rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.825rem',
-                    cursor: 'pointer'
-                  }}
+                  className="px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold cursor-pointer"
                 >
                   Add URL
                 </button>
@@ -431,184 +333,99 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
 
             {/* Image Preview List */}
             {imagesList.length > 0 ? (
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', backgroundColor: 'var(--bg-cream)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+              <div className="flex gap-3 flex-wrap bg-[#FCFAF2] p-3 rounded-xl border border-slate-200">
                 {imagesList.map((imgUrl, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      position: 'relative',
-                      width: '90px',
-                      height: '90px',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      border: '2px solid var(--border-color)',
-                      backgroundColor: '#fff'
-                    }}
-                  >
+                  <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200 bg-white group">
                     <img
                       src={imgUrl}
                       alt={`Product image ${idx + 1}`}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      className="w-full h-full object-contain p-1"
                       onError={(e) => { e.target.src = '/images/cow_ghee_front.webp'; }}
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
+                      className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-80 hover:opacity-100 cursor-pointer"
                       title="Remove image"
-                      style={{
-                        position: 'absolute',
-                        top: '4px',
-                        right: '4px',
-                        backgroundColor: 'rgba(239, 68, 68, 0.9)',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '22px',
-                        height: '22px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        padding: 0
-                      }}
                     >
-                      <X size={14} />
+                      <Trash2 size={12} />
                     </button>
-                    {idx === 0 && (
-                      <span
-                        style={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          backgroundColor: 'rgba(0,0,0,0.7)',
-                          color: '#fff',
-                          fontSize: '0.65rem',
-                          textAlign: 'center',
-                          padding: '0.1rem 0',
-                          fontWeight: 700
-                        }}
-                      >
-                        Main
-                      </span>
-                    )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: '0.85rem', color: '#ef4444', fontStyle: 'italic' }}>
-                No images added yet. Please upload an image file or add an image path.
-              </div>
+              <div className="text-xs text-red-500 italic">No images added yet. Upload or add a URL above.</div>
             )}
           </div>
 
-          {/* Dynamic Variant Matrix Section */}
-          <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem', marginTop: '0.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          {/* Package Variants Section */}
+          <div className="border-t border-slate-200 pt-5 space-y-4">
+            <div className="flex justify-between items-center">
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Pricing & Stock Variants</h3>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
-                  Define size options (e.g. 250g, 500g, 1L Jar) with specific prices and stock levels.
+                <label className="block font-extrabold text-sm text-slate-900 m-0">
+                  Package Options & Stock Inventory *
+                </label>
+                <span className="text-xs text-slate-500">
+                  Define weights (e.g. 500g Jar, 1L Jar), price in INR, and inventory stock level.
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleAddVariant}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  backgroundColor: 'var(--primary-color)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '0.4rem 0.85rem',
-                  fontSize: '0.825rem',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
+                className="btn btn-outline px-3 py-1.5 text-xs font-bold flex items-center gap-1"
               >
-                <Plus size={16} /> Add Variant Size
+                <Plus size={14} /> Add Variant Option
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className="space-y-3">
               {variants.map((v, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '2fr 1.5fr 1.5fr 2fr 0.5fr',
-                    gap: '0.75rem',
-                    alignItems: 'center',
-                    backgroundColor: 'var(--bg-cream)',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)'
-                  }}
-                >
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-light)' }}>Weight / Volume</label>
+                <div key={idx} className="bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                  <div className="sm:col-span-4">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Package Weight/Type</label>
                     <input
                       type="text"
+                      placeholder="e.g. 500g Jar"
                       value={v.weight_or_volume}
                       onChange={e => handleVariantChange(idx, 'weight_or_volume', e.target.value)}
-                      placeholder="e.g. 500g Jar"
                       required
-                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '0.85rem' }}
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:border-[#0033B4]"
                     />
                   </div>
 
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-light)' }}>Price (₹)</label>
+                  <div className="sm:col-span-3">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Price (₹)</label>
                     <input
                       type="number"
                       step="0.01"
+                      placeholder="350.00"
                       value={v.price}
                       onChange={e => handleVariantChange(idx, 'price', e.target.value)}
-                      placeholder="350.00"
                       required
-                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '0.85rem' }}
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:border-[#0033B4]"
                     />
                   </div>
 
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-light)' }}>Stock Quantity</label>
+                  <div className="sm:col-span-3">
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1">Stock Count</label>
                     <input
                       type="number"
+                      placeholder="50"
                       value={v.stock}
                       onChange={e => handleVariantChange(idx, 'stock', e.target.value)}
-                      placeholder="50"
                       required
-                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '0.85rem' }}
+                      className="w-full p-2 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:border-[#0033B4]"
                     />
                   </div>
 
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-light)' }}>SKU Code (Optional)</label>
-                    <input
-                      type="text"
-                      value={v.sku}
-                      onChange={e => handleVariantChange(idx, 'sku', e.target.value)}
-                      placeholder="Auto-generated if empty"
-                      style={{ width: '100%', padding: '0.4rem 0.6rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '0.85rem' }}
-                    />
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '1rem' }}>
+                  <div className="sm:col-span-2 flex justify-end items-center pt-2 sm:pt-4">
                     <button
                       type="button"
                       onClick={() => handleRemoveVariant(idx)}
-                      title="Remove Variant"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#ef4444',
-                        cursor: 'pointer',
-                        padding: '0.2rem'
-                      }}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg cursor-pointer transition-colors"
+                      title="Remove variant"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
@@ -616,58 +433,24 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
             </div>
           </div>
 
-          {/* Modal Footer Actions */}
-          <div
-            style={{
-              display: 'flex',
-              justify: 'flex-end',
-              gap: '1rem',
-              marginTop: '1rem',
-              paddingTop: '1.25rem',
-              borderTop: '1px solid var(--border-color)'
-            }}
-          >
+          {/* Modal Actions */}
+          <div className="border-t border-slate-200 pt-5 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: '0.65rem 1.5rem',
-                borderRadius: '8px',
-                border: '1px solid var(--border-color)',
-                backgroundColor: '#fff',
-                color: 'var(--text-dark)',
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
+              className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 font-bold text-xs text-slate-700 cursor-pointer"
             >
               Cancel
             </button>
-
             <button
               type="submit"
-              disabled={saving || uploadingImage}
-              style={{
-                padding: '0.65rem 2rem',
-                borderRadius: '8px',
-                border: 'none',
-                backgroundColor: 'var(--secondary-color)',
-                color: 'var(--primary-color)',
-                fontWeight: 800,
-                cursor: (saving || uploadingImage) ? 'wait' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
+              disabled={saving}
+              className="btn btn-primary px-6 py-2.5 text-xs font-black"
             >
-              {saving ? (
-                'Saving Changes...'
-              ) : (
-                <>
-                  <Check size={18} /> {productToEdit ? 'Update Product' : 'Create & Publish Product'}
-                </>
-              )}
+              {saving ? 'Saving Changes...' : productToEdit ? 'Save Product Updates' : 'Create Product'}
             </button>
           </div>
+
         </form>
       </div>
     </div>

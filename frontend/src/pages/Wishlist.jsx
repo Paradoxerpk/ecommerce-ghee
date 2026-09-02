@@ -20,14 +20,14 @@ export default function Wishlist() {
 
   if (!isAuthenticated) {
     return (
-      <div className="section" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', maxWidth: '500px', boxShadow: 'var(--shadow-sm)' }}>
-          <User size={48} style={{ color: 'var(--primary-color)', marginBottom: '1rem' }} />
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>Login Required</h2>
-          <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+      <div className="py-16 min-h-[60vh] flex items-center justify-center bg-[#FAF9F6]">
+        <div className="text-center p-8 bg-white rounded-2xl border border-slate-200 max-w-md shadow-sm mx-4">
+          <User size={48} className="text-[#0033B4] mx-auto mb-4" />
+          <h2 className="text-2xl font-bold font-serif text-slate-900 mb-2">Login Required</h2>
+          <p className="text-slate-500 text-sm mb-6">
             Please log in to view and manage your saved wishlist products.
           </p>
-          <Link to="/login" className="btn btn-primary" style={{ padding: '0.65rem 1.75rem' }}>
+          <Link to="/login" className="btn btn-primary px-6 py-2.5 text-sm">
             Log In Now <ArrowRight size={16} />
           </Link>
         </div>
@@ -47,14 +47,14 @@ export default function Wishlist() {
 
   if (wishlistItems.length === 0) {
     return (
-      <div className="section" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: 'var(--bg-cream)', color: 'var(--primary-color)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-            <Heart size={40} style={{ alignSelf: 'center' }} />
+      <div className="py-16 min-h-[60vh] flex items-center justify-center bg-[#FAF9F6]">
+        <div className="text-center p-8">
+          <div className="w-20 h-20 rounded-full bg-amber-100 text-[#0033B4] inline-flex items-center justify-center mb-6">
+            <Heart size={40} />
           </div>
-          <h2 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Your Wishlist is Empty</h2>
-          <p style={{ color: 'var(--text-light)', marginBottom: '2rem' }}>Browse our pure cow and buffalo ghee collection to save items for later purchase!</p>
-          <Link to="/shop" className="btn btn-primary">
+          <h2 className="text-3xl font-extrabold font-serif text-slate-900 mb-2">Your Wishlist is Empty</h2>
+          <p className="text-slate-500 text-sm mb-6">Browse our pure cow and buffalo ghee collection to save items for later purchase!</p>
+          <Link to="/shop" className="btn btn-primary px-8 py-3 text-sm">
             Browse Ghee Catalog <ArrowRight size={16} />
           </Link>
         </div>
@@ -63,16 +63,16 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="section" style={{ minHeight: '80vh', padding: '3rem 0' }}>
-      <div className="container" style={{ maxWidth: '1200px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-          <h1 className="section-title" style={{ margin: 0, padding: 0 }}>My Wishlist</h1>
-          <button onClick={clearWishlist} className="btn btn-text" style={{ color: '#ef4444', fontSize: '0.9rem', fontWeight: 700 }}>
+    <div className="py-10 sm:py-14 bg-[#FAF9F6] min-h-screen">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-black font-serif text-slate-900 m-0">My Wishlist</h1>
+          <button onClick={clearWishlist} className="text-red-500 hover:underline text-xs sm:text-sm font-bold cursor-pointer">
             Clear Wishlist
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {wishlistItems.map((product) => {
             const baseVariant = product.variants && product.variants.length > 0
               ? product.variants[0]
@@ -83,28 +83,12 @@ export default function Wishlist() {
               : '/images/cow_ghee_front.webp';
 
             return (
-              <div key={product.id} className="card" style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: 'var(--shadow-sm)' }}>
-                <div style={{ position: 'relative', width: '100%', height: '220px', backgroundColor: 'var(--bg-cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid var(--border-color)' }}>
+              <div key={product.id} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:shadow-xl transition-all duration-300">
+                <div className="relative w-full h-56 bg-[#FCFAF2] border-b border-slate-100 flex items-center justify-center p-4">
                   <button
-                    className="wishlist-toggle active"
                     onClick={() => toggleWishlist(product)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer text-red-500 shadow-sm z-10"
                     title="Remove from Wishlist"
-                    style={{
-                      position: 'absolute',
-                      top: '12px',
-                      right: '12px',
-                      width: '34px',
-                      height: '34px',
-                      borderRadius: '50%',
-                      backgroundColor: '#fff',
-                      border: '1px solid var(--border-color)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      color: '#ef4444',
-                      zIndex: 2
-                    }}
                   >
                     <Star size={18} fill="currentColor" />
                   </button>
@@ -112,38 +96,31 @@ export default function Wishlist() {
                   <img
                     src={mainImage}
                     alt={product.name}
-                    style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}
+                    className="max-w-[85%] max-h-[85%] object-contain"
                     onError={(e) => { e.target.src = '/images/cow_ghee_front.webp'; }}
                   />
                 </div>
 
-                <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-dark)' }}>{product.name}</h3>
-                  <p style={{
-                    fontSize: '0.875rem',
-                    color: 'var(--text-light)',
-                    lineHeight: '1.5',
-                    margin: '0.4rem 0 1rem 0',
-                    minHeight: '2.8em'
-                  }}>
+                <div className="p-5 flex flex-col flex-1">
+                  <h3 className="text-base font-extrabold text-slate-900 mb-1 font-serif line-clamp-1">{product.name}</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed mb-4 min-h-[2.8rem] line-clamp-2">
                     {truncateDescription(product.description, 18)}
                   </p>
 
-                  <div style={{ marginTop: 'auto', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>Pack: {baseVariant.weight_or_volume}</span>
-                      <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary-color)' }}>₹{parseFloat(baseVariant.price).toFixed(2)}</span>
+                  <div className="mt-auto pt-3 border-t border-slate-100">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-xs text-slate-400">Pack: {baseVariant.weight_or_volume}</span>
+                      <span className="text-lg font-black text-[#0033B4]">₹{parseFloat(baseVariant.price).toFixed(2)}</span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <Link to={`/product/${product.slug}`} className="btn btn-outline" style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem', borderRadius: '8px', textAlign: 'center' }}>
-                        View Details
+                    <div className="flex gap-2">
+                      <Link to={`/product/${product.slug}`} className="btn btn-outline flex-1 py-2 text-xs text-center rounded-lg">
+                        Details
                       </Link>
                       <button
                         onClick={() => handleAddToCart(product)}
                         disabled={isOutOfStock}
-                        className="btn btn-primary"
-                        style={{ flex: 1.2, padding: '0.5rem', fontSize: '0.8rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem' }}
+                        className="btn btn-primary flex-1 py-2 text-xs flex items-center justify-center gap-1 rounded-lg font-extrabold"
                       >
                         <ShoppingCart size={14} /> Add to Cart
                       </button>

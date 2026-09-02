@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Search, Filter, RefreshCw, Star, Heart, ArrowRight, X, ShieldCheck, Check } from 'lucide-react';
+import { Search, Filter, RefreshCw, Star, Heart, ArrowRight, X, ShieldCheck, Check, SlidersHorizontal } from 'lucide-react';
 import { API_BASE } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
@@ -90,6 +90,7 @@ export default function Shop() {
   const [selectedCategory, setSelectedCategory] = useState(categoryParam);
   const [selectedWeight, setSelectedWeight] = useState('');
   const [maxPrice, setMaxPrice] = useState(2500);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Track active variant selected per product card
   const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
@@ -105,14 +106,12 @@ export default function Shop() {
     const fetchCatalogData = async () => {
       setLoading(true);
       try {
-        // Fetch active categories
         const catRes = await fetch(`${API_BASE}/products/categories`);
         if (catRes.ok) {
           const catData = await catRes.json();
           if (catData.length > 0) setCategories(catData);
         }
 
-        // Build query string
         const params = new URLSearchParams();
         if (selectedCategory) params.append('category', selectedCategory);
         if (search) params.append('search', search);
@@ -178,66 +177,129 @@ export default function Shop() {
     }));
   };
 
+  const FilterContent = () => (
+    <>
+      <div className="flex justify-between items-center pb-3 border-b border-slate-200 mb-6">
+        <div className="flex items-center gap-2 font-bold text-slate-900 text-base">
+          <Filter size={18} className="text-[#0033B4]" />
+          <span>Filters</span>
+        </div>
+        <button 
+          onClick={handleResetFilters} 
+          className="text-[#0033B4] hover:text-[#002688] text-xs font-bold flex items-center gap-1 cursor-pointer"
+        >
+          <RefreshCw size={13} /> Reset
+        </button>
+      </div>
+
+      {/* Category Section */}
+      <div className="mb-6">
+        <h4 className="text-xs font-extrabold mb-3 uppercase tracking-wider text-slate-500">
+          Category
+        </h4>
+        <div className="space-y-2">
+          <label className={`flex items-center gap-2.5 text-sm cursor-pointer ${selectedCategory === '' ? 'font-bold text-[#0033B4]' : 'text-slate-700'}`}>
+            <input 
+              type="radio" 
+              name="category" 
+              checked={selectedCategory === ''} 
+              onChange={() => { setSelectedCategory(''); setSearchParams({}); setMobileFilterOpen(false); }} 
+              className="accent-[#0033B4]"
+            />
+            <span>All Categories</span>
+          </label>
+          {categories.map(cat => (
+            <label key={cat.slug} className={`flex items-center gap-2.5 text-sm cursor-pointer ${selectedCategory === cat.slug ? 'font-bold text-[#0033B4]' : 'text-slate-700'}`}>
+              <input 
+                type="radio" 
+                name="category" 
+                checked={selectedCategory === cat.slug} 
+                onChange={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); setMobileFilterOpen(false); }} 
+                className="accent-[#0033B4]"
+              />
+              <span>{cat.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Package Weight Section */}
+      <div className="mb-6">
+        <h4 className="text-xs font-extrabold mb-3 uppercase tracking-wider text-slate-500">
+          Package Size
+        </h4>
+        <select 
+          value={selectedWeight} 
+          onChange={(e) => setSelectedWeight(e.target.value)}
+          className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800"
+        >
+          <option value="">All Package Sizes</option>
+          {WEIGHT_OPTIONS.map(weight => (
+            <option key={weight} value={weight}>{weight}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Price Filter Slider */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+            Max Price
+          </h4>
+          <strong className="text-[#0033B4] text-sm">₹{maxPrice}</strong>
+        </div>
+        <input 
+          type="range" 
+          min="50" 
+          max="2500" 
+          step="50" 
+          value={maxPrice} 
+          onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
+          className="w-full accent-[#0033B4] cursor-pointer"
+        />
+        <div className="flex justify-between text-xs text-slate-400 mt-1">
+          <span>₹50</span>
+          <span>₹2500</span>
+        </div>
+      </div>
+
+      {/* Quality Commitment Callout */}
+      <div className="pt-4 border-t border-slate-200 space-y-2 text-xs text-slate-500">
+        <div className="flex items-center gap-1.5 font-bold text-[#0033B4]">
+          <ShieldCheck size={16} /> 100% Guarantee
+        </div>
+        <p>Lab tested for purity with zero chemical additives or artificial aroma.</p>
+      </div>
+    </>
+  );
+
   return (
-    <div style={{ backgroundColor: '#FAF9F5', minHeight: '90vh', paddingBottom: '5rem' }}>
+    <div className="bg-[#FAF9F5] min-h-screen pb-16">
       
       {/* 1. Header Banner */}
-      <div style={{
-        backgroundColor: 'var(--primary-color)',
-        color: '#fff',
-        padding: '3.5rem 0 3rem 0',
-        backgroundImage: 'linear-gradient(135deg, rgba(0, 51, 180, 0.95) 0%, rgba(18, 31, 62, 0.98) 100%)',
-        boxShadow: 'var(--shadow-md)',
-        marginBottom: '3rem'
-      }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <span style={{
-            color: 'var(--secondary-color)',
-            fontSize: '0.85rem',
-            fontWeight: 800,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            display: 'block',
-            marginBottom: '0.5rem'
-          }}>
+      <div className="bg-gradient-to-br from-[#0033B4] to-[#121F3E] text-white py-10 sm:py-14 shadow-md mb-8">
+        <div className="container mx-auto px-4 text-center">
+          <span className="text-[#F5C518] text-xs sm:text-sm font-extrabold tracking-widest uppercase block mb-2">
             Pure • Traditional • Unadulterated
           </span>
 
-          <h1 style={{
-            fontSize: '2.75rem',
-            fontFamily: 'var(--font-headings)',
-            fontWeight: 800,
-            margin: '0 0 1rem 0',
-            color: '#ffffff'
-          }}>
+          <h1 className="text-3xl sm:text-5xl font-extrabold font-serif mb-3 text-white">
             Our Ghee Collection
           </h1>
 
-          <p style={{
-            maxWidth: '650px',
-            margin: '0 auto 2rem auto',
-            color: 'rgba(255, 255, 255, 0.85)',
-            fontSize: '1.05rem',
-            lineHeight: 1.6
-          }}>
+          <p className="max-w-2xl mx-auto text-slate-200 text-sm sm:text-base leading-relaxed mb-6">
             Crafted with traditional methods from 100% natural, farm-fresh milk. Experience divine aroma, granular texture, and health benefits in every spoon.
           </p>
 
           {/* Quick Category Filter Pills */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="flex justify-center gap-2 flex-wrap">
             <button
               onClick={() => { setSelectedCategory(''); setSearchParams({}); }}
-              style={{
-                padding: '0.5rem 1.25rem',
-                borderRadius: '30px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                backgroundColor: selectedCategory === '' ? 'var(--secondary-color)' : 'rgba(255, 255, 255, 0.1)',
-                color: selectedCategory === '' ? 'var(--primary-color)' : '#fff',
-                fontWeight: 800,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                transition: 'all 0.25s'
-              }}
+              className={`px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer border ${
+                selectedCategory === '' 
+                  ? 'bg-[#F5C518] text-[#0033B4] border-[#F5C518]' 
+                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+              }`}
             >
               All Ghee ({products.length})
             </button>
@@ -245,17 +307,11 @@ export default function Shop() {
               <button
                 key={cat.slug}
                 onClick={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); }}
-                style={{
-                  padding: '0.5rem 1.25rem',
-                  borderRadius: '30px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  backgroundColor: selectedCategory === cat.slug ? 'var(--secondary-color)' : 'rgba(255, 255, 255, 0.1)',
-                  color: selectedCategory === cat.slug ? 'var(--primary-color)' : '#fff',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.25s'
-                }}
+                className={`px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer border ${
+                  selectedCategory === cat.slug 
+                    ? 'bg-[#F5C518] text-[#0033B4] border-[#F5C518]' 
+                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
               >
                 {cat.name}
               </button>
@@ -265,191 +321,103 @@ export default function Shop() {
       </div>
 
       {/* 2. Main Store Layout */}
-      <div className="container" style={{ maxWidth: '1500px', width: '96%' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '2rem' }} className="shop-layout">
-          
-          {/* Sidebar Filter Panel */}
-          <aside style={{
-            backgroundColor: '#fff',
-            borderRadius: '16px',
-            border: '1px solid var(--border-color)',
-            padding: '1.75rem',
-            height: 'fit-content',
-            boxShadow: 'var(--shadow-sm)',
-            position: 'sticky',
-            top: '100px'
-          }} className="filters-sidebar">
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1rem', color: 'var(--primary-color)' }}>
-                <Filter size={18} />
-                <span>Filters</span>
+      <div className="container mx-auto px-4 max-w-7xl">
+        
+        {/* Mobile Filter Toggle Button */}
+        <div className="lg:hidden mb-4">
+          <button
+            onClick={() => setMobileFilterOpen(true)}
+            className="w-full bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-center gap-2 font-bold text-slate-800 shadow-sm"
+          >
+            <SlidersHorizontal size={18} className="text-[#0033B4]" />
+            <span>Filter & Sort Products</span>
+          </button>
+        </div>
+
+        {/* Mobile Filter Drawer */}
+        {mobileFilterOpen && (
+          <div className="fixed inset-0 z-50 bg-black/60 lg:hidden flex justify-end" onClick={() => setMobileFilterOpen(false)}>
+            <div 
+              className="bg-white w-4/5 max-w-xs h-full p-6 overflow-y-auto shadow-2xl flex flex-col justify-between"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div>
+                <div className="flex justify-between items-center pb-4 border-b border-slate-100 mb-4">
+                  <h3 className="font-bold text-lg text-slate-900">Filter Products</h3>
+                  <button onClick={() => setMobileFilterOpen(false)} className="p-1 text-slate-500">
+                    <X size={20} />
+                  </button>
+                </div>
+                <FilterContent />
               </div>
-              <button 
-                onClick={handleResetFilters} 
-                style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+              <button
+                onClick={() => setMobileFilterOpen(false)}
+                className="btn btn-primary w-full py-3 mt-6 text-sm"
               >
-                <RefreshCw size={13} /> Reset
+                Apply Filters
               </button>
             </div>
+          </div>
+        )}
 
-            {/* Category Section */}
-            <div style={{ marginBottom: '1.75rem' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-light)' }}>
-                Category
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9rem', cursor: 'pointer', fontWeight: selectedCategory === '' ? 700 : 500 }}>
-                  <input 
-                    type="radio" 
-                    name="category" 
-                    checked={selectedCategory === ''} 
-                    onChange={() => { setSelectedCategory(''); setSearchParams({}); }} 
-                    style={{ accentColor: 'var(--primary-color)' }}
-                  />
-                  <span>All Categories</span>
-                </label>
-                {categories.map(cat => (
-                  <label key={cat.slug} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.9rem', cursor: 'pointer', fontWeight: selectedCategory === cat.slug ? 700 : 500 }}>
-                    <input 
-                      type="radio" 
-                      name="category" 
-                      checked={selectedCategory === cat.slug} 
-                      onChange={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); }} 
-                      style={{ accentColor: 'var(--primary-color)' }}
-                    />
-                    <span>{cat.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Package Weight Section */}
-            <div style={{ marginBottom: '1.75rem' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 800, marginBottom: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-light)' }}>
-                Package Size
-              </h4>
-              <select 
-                value={selectedWeight} 
-                onChange={(e) => setSelectedWeight(e.target.value)}
-                style={{
-                  width: '100%',
-                  fontSize: '0.875rem',
-                  padding: '0.6rem 0.75rem',
-                  borderRadius: '8px',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: '#fff',
-                  cursor: 'pointer'
-                }}
-              >
-                <option value="">All Package Sizes</option>
-                {WEIGHT_OPTIONS.map(weight => (
-                  <option key={weight} value={weight}>{weight}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Price Filter Slider */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-light)' }}>
-                  Max Price
-                </h4>
-                <strong style={{ color: 'var(--primary-color)', fontSize: '0.95rem' }}>₹{maxPrice}</strong>
-              </div>
-              <input 
-                type="range" 
-                min="50" 
-                max="2500" 
-                step="50" 
-                value={maxPrice} 
-                onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
-                style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--primary-color)' }}
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-light)', marginTop: '0.35rem' }}>
-                <span>₹50</span>
-                <span>₹2500</span>
-              </div>
-            </div>
-
-            {/* Quality Commitment Callout */}
-            <div style={{
-              marginTop: '2rem',
-              paddingTop: '1.5rem',
-              borderTop: '1px solid var(--border-color)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.6rem',
-              fontSize: '0.8rem',
-              color: 'var(--text-light)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: 'var(--primary-color)' }}>
-                <ShieldCheck size={16} /> 100% Guarantee
-              </div>
-              <span>Lab tested for purity with zero chemical additives or artificial aroma.</span>
-            </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Desktop Sidebar Filter Panel */}
+          <aside className="hidden lg:block lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 h-fit sticky top-24 shadow-sm">
+            <FilterContent />
           </aside>
 
           {/* Catalog View Main Grid */}
-          <main>
+          <main className="lg:col-span-9">
             {/* Search Input Bar & Active Filter Bar */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }} className="search-bar-row">
-                <div style={{ position: 'relative', flexGrow: 1 }}>
-                  <Search size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+            <div className="space-y-4 mb-6">
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                <div className="relative flex-1">
+                  <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input 
                     type="text" 
                     placeholder="Search ghee products by name or description..." 
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem 1rem 0.75rem 2.75rem',
-                      borderRadius: '12px',
-                      border: '1px solid var(--border-color)',
-                      fontSize: '0.95rem',
-                      backgroundColor: '#fff',
-                      boxShadow: 'var(--shadow-sm)'
-                    }}
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm bg-white shadow-sm focus:outline-none focus:border-[#0033B4]"
                   />
                   {search && (
                     <button 
                       onClick={() => setSearch('')} 
-                      style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)' }}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     >
                       <X size={16} />
                     </button>
                   )}
                 </div>
 
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-light)', fontWeight: 600, whitespace: 'nowrap' }}>
+                <div className="text-xs sm:text-sm text-slate-500 font-semibold whitespace-nowrap self-end sm:self-center">
                   Showing {products.length} {products.length === 1 ? 'Product' : 'Products'}
                 </div>
               </div>
 
               {/* Active Filter Tags */}
               {(selectedCategory || selectedWeight || search || maxPrice < 2500) && (
-                <div style={{ display: 'flex', items: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.8rem' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--text-light)' }}>Active Filters:</span>
+                <div className="flex items-center gap-2 flex-wrap text-xs">
+                  <span className="font-bold text-slate-500">Active Filters:</span>
                   {selectedCategory && (
-                    <span style={{ backgroundColor: 'var(--bg-cream)', border: '1px solid var(--border-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600 }}>
-                      Cat: {selectedCategory} <X size={12} style={{ cursor: 'pointer' }} onClick={() => { setSelectedCategory(''); setSearchParams({}); }} />
+                    <span className="bg-amber-50 border border-amber-200 text-slate-800 px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium">
+                      Cat: {selectedCategory} <X size={12} className="cursor-pointer hover:text-red-500" onClick={() => { setSelectedCategory(''); setSearchParams({}); }} />
                     </span>
                   )}
                   {selectedWeight && (
-                    <span style={{ backgroundColor: 'var(--bg-cream)', border: '1px solid var(--border-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600 }}>
-                      Weight: {selectedWeight} <X size={12} style={{ cursor: 'pointer' }} onClick={() => setSelectedWeight('')} />
+                    <span className="bg-amber-50 border border-amber-200 text-slate-800 px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium">
+                      Weight: {selectedWeight} <X size={12} className="cursor-pointer hover:text-red-500" onClick={() => setSelectedWeight('')} />
                     </span>
                   )}
                   {search && (
-                    <span style={{ backgroundColor: 'var(--bg-cream)', border: '1px solid var(--border-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600 }}>
-                      "{search}" <X size={12} style={{ cursor: 'pointer' }} onClick={() => setSearch('')} />
+                    <span className="bg-amber-50 border border-amber-200 text-slate-800 px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium">
+                      "{search}" <X size={12} className="cursor-pointer hover:text-red-500" onClick={() => setSearch('')} />
                     </span>
                   )}
                   {maxPrice < 2500 && (
-                    <span style={{ backgroundColor: 'var(--bg-cream)', border: '1px solid var(--border-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600 }}>
-                      Under ₹{maxPrice} <X size={12} style={{ cursor: 'pointer' }} onClick={() => setMaxPrice(2500)} />
+                    <span className="bg-amber-50 border border-amber-200 text-slate-800 px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium">
+                      Under ₹{maxPrice} <X size={12} className="cursor-pointer hover:text-red-500" onClick={() => setMaxPrice(2500)} />
                     </span>
                   )}
                 </div>
@@ -458,11 +426,11 @@ export default function Shop() {
 
             {/* Catalog Products Grid */}
             {loading ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
-                <div style={{ fontWeight: 600, color: 'var(--text-light)' }}>Loading Ghee Products...</div>
+              <div className="flex justify-center items-center min-h-[40vh]">
+                <div className="font-semibold text-slate-400">Loading Ghee Products...</div>
               </div>
             ) : products.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }} className="products-3-grid">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map(product => {
                   const variants = Array.isArray(product.variants) && product.variants.length > 0
                     ? product.variants
@@ -472,7 +440,6 @@ export default function Shop() {
                   const inWish = isInWishlist(product.id);
                   const isOutOfStock = activeVariant.stock <= 0;
 
-                  // Ratings summary
                   const reviews = product.reviews || [];
                   const avgRating = reviews.length > 0
                     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
@@ -485,153 +452,79 @@ export default function Shop() {
                   return (
                     <div
                       key={product.id}
-                      style={{
-                        backgroundColor: '#fff',
-                        borderRadius: '16px',
-                        border: '1px solid var(--border-color)',
-                        overflow: 'hidden',
-                        boxShadow: 'var(--shadow-sm)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        transition: 'transform 0.25s ease, box-shadow 0.25s ease'
-                      }}
-                      className="shop-product-card"
+                      className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                     >
                       {/* Product Image Box */}
-                      <div style={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '240px',
-                        backgroundColor: 'var(--bg-cream)',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderBottom: '1px solid var(--border-color)'
-                      }}>
+                      <div className="relative w-full h-56 bg-[#FAF9F5] overflow-hidden flex items-center justify-center border-b border-slate-100 p-4">
                         {/* Category Badge */}
-                        <span style={{
-                          position: 'absolute',
-                          top: '12px',
-                          left: '12px',
-                          backgroundColor: 'var(--primary-color)',
-                          color: '#fff',
-                          padding: '0.2rem 0.65rem',
-                          borderRadius: '20px',
-                          fontSize: '0.7rem',
-                          fontWeight: 800,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                          zIndex: 2
-                        }}>
+                        <span className="absolute top-3 left-3 bg-[#0033B4] text-white px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide z-10">
                           {product.category_name || 'Pure Ghee'}
                         </span>
 
                         {/* Wishlist Button */}
                         <button
                           onClick={() => toggleWishlist(product)}
-                          style={{
-                            position: 'absolute',
-                            top: '12px',
-                            right: '12px',
-                            width: '34px',
-                            height: '34px',
-                            borderRadius: '50%',
-                            backgroundColor: '#fff',
-                            border: '1px solid var(--border-color)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            color: inWish ? '#ef4444' : 'var(--text-light)',
-                            boxShadow: 'var(--shadow-sm)',
-                            zIndex: 2,
-                            transition: 'all 0.2s'
-                          }}
+                          className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer shadow-sm z-10 transition-colors ${
+                            inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                          }`}
                           title={inWish ? "Remove from Wishlist" : "Add to Wishlist"}
                         >
                           <Heart size={18} fill={inWish ? "currentColor" : "none"} />
                         </button>
 
-                        {/* High-quality Real Product Image */}
-                        <Link to={`/product/${product.slug}`} style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
+                        <Link to={`/product/${product.slug}`} className="w-full h-full flex items-center justify-center p-2">
                           <img
                             src={mainImage}
                             alt={product.name}
-                            style={{
-                              maxWidth: '100%',
-                              maxHeight: '100%',
-                              objectFit: 'contain',
-                              transition: 'transform 0.3s ease'
-                            }}
-                            className="card-image-hover"
+                            className="max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
                             onError={(e) => { e.target.src = '/images/cow_ghee_front.webp'; }}
                           />
                         </Link>
                       </div>
 
                       {/* Product Content Body */}
-                      <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <div className="p-5 flex flex-col flex-1">
                         
                         {/* Rating Stars Summary */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
-                          <div style={{ display: 'flex', color: '#f59e0b' }}>
-                            <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                        <div className="flex items-center gap-1 mb-2">
+                          <div className="flex text-amber-400">
+                            <Star size={14} fill="currentColor" stroke="currentColor" />
                           </div>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>{avgRating}</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
-                            ({reviews.length > 0 ? reviews.length : '5'} reviews)
+                          <span className="text-xs font-bold text-slate-800">{avgRating}</span>
+                          <span className="text-xs text-slate-400">
+                            ({reviews.length > 0 ? reviews.length : '5'})
                           </span>
                         </div>
 
                         {/* Title */}
                         <Link to={`/product/${product.slug}`}>
-                          <h3 style={{
-                            margin: '0 0 0.5rem 0',
-                            fontSize: '1.1rem',
-                            fontWeight: 800,
-                            fontFamily: 'var(--font-body)',
-                            color: 'var(--text-dark)',
-                            lineHeight: '1.3'
-                          }}>
+                          <h3 className="text-base font-extrabold text-slate-900 mb-1 line-clamp-1 font-serif hover:text-[#0033B4] transition-colors">
                             {product.name}
                           </h3>
                         </Link>
 
                         {/* Description */}
-                        <p style={{
-                          fontSize: '0.875rem',
-                          color: 'var(--text-light)',
-                          lineHeight: '1.5',
-                          margin: '0.4rem 0 1rem 0',
-                          minHeight: '2.8em'
-                        }}>
+                        <p className="text-xs text-slate-500 leading-relaxed mb-4 min-h-[2.8rem] line-clamp-2">
                           {truncateDescription(product.description, 18)}
                         </p>
 
                         {/* Interactive Weight/Variant Selector Pills */}
-                        <div style={{ marginBottom: '1.25rem' }}>
-                          <span style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-light)', display: 'block', marginBottom: '0.35rem' }}>
-                            PACKAGE OPTIONS:
+                        <div className="mb-4">
+                          <span className="text-[10px] font-extrabold text-slate-400 block mb-1.5 uppercase">
+                            Package Options:
                           </span>
-                          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                          <div className="flex gap-1.5 flex-wrap">
                             {variants.map(v => {
                               const isSelected = activeVariant.id === v.id;
                               return (
                                 <button
                                   key={v.id}
                                   onClick={() => handleSelectVariantForProduct(product.id, v)}
-                                  style={{
-                                    fontSize: '0.725rem',
-                                    fontWeight: 700,
-                                    padding: '0.2rem 0.55rem',
-                                    borderRadius: '6px',
-                                    border: isSelected ? '1.5px solid var(--primary-color)' : '1px solid var(--border-color)',
-                                    backgroundColor: isSelected ? 'rgba(0, 51, 180, 0.08)' : '#fff',
-                                    color: isSelected ? 'var(--primary-color)' : 'var(--text-dark)',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s'
-                                  }}
+                                  className={`text-xs font-bold px-2 py-1 rounded-md cursor-pointer transition-all ${
+                                    isSelected
+                                      ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
+                                      : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                                  }`}
                                 >
                                   {v.weight_or_volume}
                                 </button>
@@ -641,55 +534,30 @@ export default function Shop() {
                         </div>
 
                         {/* Footer Price & Add/View Button */}
-                        <div style={{
-                          marginTop: 'auto',
-                          paddingTop: '1rem',
-                          borderTop: '1px solid var(--border-color)',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}>
+                        <div className="mt-auto pt-3 border-t border-slate-100 flex justify-between items-center">
                           <div>
-                            <span style={{ fontSize: '0.725rem', color: 'var(--text-light)', display: 'block' }}>Price</span>
-                            <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary-color)', fontFamily: 'var(--font-body)' }}>
+                            <span className="text-[10px] text-slate-400 block">Price</span>
+                            <span className="text-lg font-black text-[#0033B4]">
                               ₹{parseFloat(activeVariant.price).toFixed(2)}
                             </span>
                           </div>
 
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <div className="flex gap-1.5">
                             <button
                               onClick={() => addToCart(product, activeVariant, 1)}
                               disabled={isOutOfStock}
-                              style={{
-                                backgroundColor: 'var(--secondary-color)',
-                                color: 'var(--primary-color)',
-                                border: 'none',
-                                padding: '0.5rem 0.85rem',
-                                borderRadius: '8px',
-                                fontSize: '0.8rem',
-                                fontWeight: 800,
-                                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer ${
+                                isOutOfStock
+                                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                  : 'bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4]'
+                              }`}
                             >
                               {isOutOfStock ? 'Sold Out' : '+ Cart'}
                             </button>
 
                             <Link
                               to={`/product/${product.slug}`}
-                              style={{
-                                backgroundColor: 'var(--primary-color)',
-                                color: '#fff',
-                                padding: '0.5rem 0.85rem',
-                                borderRadius: '8px',
-                                fontSize: '0.8rem',
-                                fontWeight: 700,
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.25rem'
-                              }}
+                              className="bg-[#0033B4] hover:bg-[#002688] text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
                             >
                               View <ArrowRight size={14} />
                             </Link>
@@ -702,25 +570,16 @@ export default function Shop() {
                 })}
               </div>
             ) : (
-              /* No Results Graceful View */
-              <div style={{
-                textAlign: 'center',
-                padding: '4rem 2rem',
-                backgroundColor: '#fff',
-                borderRadius: '16px',
-                border: '1px solid var(--border-color)',
-                boxShadow: 'var(--shadow-sm)'
-              }}>
-                <Search size={48} style={{ color: 'var(--text-light)', marginBottom: '1rem', opacity: 0.4 }} />
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>No Matching Ghee Products</h3>
-                <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+              /* No Results View */
+              <div className="text-center py-12 px-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                <Search size={48} className="mx-auto text-slate-300 mb-3" />
+                <h3 className="text-lg font-bold text-slate-900 mb-1">No Matching Ghee Products</h3>
+                <p className="text-sm text-slate-500 mb-6">
                   We couldn't find any products matching your current search filters.
                 </p>
-                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                  <button onClick={handleResetFilters} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', fontSize: '0.875rem' }}>
-                    Reset All Filters
-                  </button>
-                </div>
+                <button onClick={handleResetFilters} className="btn btn-primary px-6 py-2.5 text-sm">
+                  Reset All Filters
+                </button>
               </div>
             )}
           </main>

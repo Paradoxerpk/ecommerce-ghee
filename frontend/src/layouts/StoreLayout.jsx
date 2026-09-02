@@ -13,12 +13,12 @@ export default function StoreLayout() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex flex-col min-h-screen bg-[#FAF9F6] text-slate-800">
       {/* Consumer Header */}
       <Header />
 
       {/* Main Consumer Content Area */}
-      <main style={{ flexGrow: 1 }}>
+      <main className="flex-grow">
         <Outlet />
       </main>
 

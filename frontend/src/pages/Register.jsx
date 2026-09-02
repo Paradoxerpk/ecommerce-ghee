@@ -36,100 +36,78 @@ export default function Register() {
   };
 
   return (
-    <div className="section" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center' }}>
-      <div className="container" style={{ maxWidth: '440px' }}>
-        <div style={{
-          backgroundColor: '#fff',
-          borderRadius: '16px',
-          border: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-md)',
-          padding: '2.5rem'
-        }}>
-          <h2 style={{ fontSize: '2rem', textAlign: 'center', color: 'var(--primary-color)', marginBottom: '0.5rem' }}>
+    <div className="py-12 sm:py-20 min-h-[80vh] flex items-center bg-[#FAF9F6]">
+      <div className="container mx-auto px-4 max-w-md">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-6 sm:p-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center font-serif text-[#0033B4] mb-1">
             Create Account
           </h2>
-          <p style={{ textAlign: 'center', color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+          <p className="text-center text-slate-500 text-xs sm:text-sm mb-6">
             Register to save addresses and track orders
           </p>
 
           {errorMsg && (
-            <div style={{
-              backgroundColor: 'rgba(255, 59, 48, 0.05)',
-              border: '1px solid #ff3b30',
-              color: '#ff3b30',
-              padding: '0.75rem',
-              borderRadius: '8px',
-              marginBottom: '1.5rem',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.35rem'
-            }}>
+            <div className="bg-red-50 border border-red-400 text-red-600 p-3 rounded-xl mb-5 text-xs font-bold flex items-center gap-2">
               <AlertTriangle size={16} />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Full Name *</label>
-              <div style={{ position: 'relative' }}>
-                <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+              <div className="relative">
+                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  className="form-control"
                   placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Email Address *</label>
-              <div style={{ position: 'relative' }}>
-                <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
+              <div className="relative">
+                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="email"
-                  className="form-control"
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Phone Number</label>
-              <div style={{ position: 'relative' }}>
-                <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+              <div className="relative">
+                <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="tel"
-                  className="form-control"
                   placeholder="e.g. 9876543210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                 />
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
-              <label className="form-label">Password *</label>
-              <div style={{ position: 'relative' }}>
-                <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Password *</label>
+              <div className="relative">
+                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="password"
-                  className="form-control"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   required
                 />
               </div>
@@ -138,16 +116,15 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary"
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '30px', fontSize: '1rem' }}
+              className="btn btn-primary w-full py-3 text-sm font-black mt-2"
             >
               {loading ? 'Registering...' : 'Sign Up'}
             </button>
           </form>
 
-          <div style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.85rem', color: 'var(--text-light)' }}>
+          <div className="text-center mt-6 text-xs text-slate-500">
             Already have an account?{' '}
-            <Link to="/login" style={{ color: 'var(--primary-color)', fontWeight: 600, textDecoration: 'underline' }}>
+            <Link to="/login" className="text-[#0033B4] font-bold underline">
               Login here
             </Link>
           </div>

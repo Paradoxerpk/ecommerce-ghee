@@ -91,190 +91,88 @@ export default function Home() {
   };
 
   return (
-    <div style={{ backgroundColor: '#FAF9F5', color: '#1E293B' }}>
+    <div className="bg-[#FAF9F5] text-slate-800">
       
       {/* 1. Hero Showcase Section */}
-      <section style={{
-        background: 'linear-gradient(135deg, #09122C 0%, #172554 60%, #1E3A8A 100%)',
-        color: '#ffffff',
-        padding: '5rem 0 6rem 0',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Glow backdrop effects */}
-        <div style={{
-          position: 'absolute',
-          top: '-30%',
-          right: '-10%',
-          width: '600px',
-          height: '600px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(245, 197, 24, 0.18) 0%, transparent 70%)',
-          pointerEvents: 'none'
-        }} />
+      <section className="bg-gradient-to-br from-[#09122C] via-[#172554] to-[#1E3A8A] text-white py-12 lg:py-20 relative overflow-hidden">
+        {/* Glow backdrop effect */}
+        <div className="absolute -top-36 -right-36 w-96 h-96 lg:w-[600px] lg:h-[600px] rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
 
-        <div className="container" style={{ maxWidth: '1440px', width: '95%' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '4rem', alignItems: 'center' }} className="hero-grid">
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
             {/* Left Hero Headline & Description */}
-            <div>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                backgroundColor: 'rgba(245, 197, 24, 0.12)',
-                border: '1px solid rgba(245, 197, 24, 0.3)',
-                color: '#F5C518',
-                padding: '0.45rem 1.15rem',
-                borderRadius: '30px',
-                fontSize: '0.85rem',
-                fontWeight: 800,
-                letterSpacing: '0.5px',
-                marginBottom: '1.75rem'
-              }}>
+            <div className="lg:col-span-7 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/30 text-[#F5C518] px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold tracking-wide mb-6">
                 <Sparkles size={15} />
                 <span>100% Traditional Vedic Bilona Churned Ghee</span>
               </div>
 
-              <h1 style={{
-                fontSize: '3.6rem',
-                fontWeight: 900,
-                lineHeight: 1.12,
-                color: '#FFFFFF',
-                letterSpacing: '-1px',
-                marginBottom: '1.5rem'
-              }}>
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white mb-6 font-serif">
                 Pure Traditional Ghee <br />
-                <span style={{
-                  background: 'linear-gradient(135deg, #F5C518 0%, #FFDF6D 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>
+                <span className="bg-gradient-to-r from-[#F5C518] to-amber-300 bg-clip-text text-transparent">
                   Aroma & Granular Goodness
                 </span>
               </h1>
 
-              <p style={{
-                fontSize: '1.15rem',
-                color: '#CBD5E1',
-                lineHeight: 1.65,
-                maxWidth: '560px',
-                marginBottom: '2.5rem'
-              }}>
+              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
                 Sai Krishna Ghee brings you authentic, unadulterated cow and buffalo ghee prepared through time-honored methods. Rich in natural vitamins and traditional aroma for your family’s everyday health.
               </p>
 
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
                 <Link
                   to="/shop"
-                  style={{
-                    backgroundColor: '#F5C518',
-                    color: '#0033B4',
-                    padding: '0.9rem 2.25rem',
-                    borderRadius: '30px',
-                    fontWeight: 900,
-                    fontSize: '1rem',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    boxShadow: '0 8px 24px rgba(245, 197, 24, 0.3)',
-                    transition: 'all 0.25s ease'
-                  }}
+                  className="w-full sm:w-auto bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4] px-8 py-3.5 rounded-full font-black text-base inline-flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-transform active:scale-95"
                 >
                   Explore Ghee Range <ArrowRight size={18} />
                 </Link>
 
                 <Link
                   to="/about"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    border: '1px solid rgba(255, 255, 255, 0.25)',
-                    padding: '0.9rem 2rem',
-                    borderRadius: '30px',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.4rem'
-                  }}
+                  className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border border-white/25 px-7 py-3.5 rounded-full font-bold text-sm inline-flex items-center justify-center gap-2 transition-colors"
                 >
                   Our Heritage Story
                 </Link>
               </div>
 
               {/* Trust Badges */}
-              <div style={{ display: 'flex', gap: '2rem', marginTop: '3rem', borderTop: '1px solid rgba(255, 255, 255, 0.12)', paddingTop: '1.75rem' }}>
+              <div className="grid grid-cols-3 gap-4 mt-10 pt-6 border-t border-white/15 max-w-md mx-auto lg:mx-0">
                 <div>
-                  <strong style={{ display: 'block', fontSize: '1.4rem', fontWeight: 900, color: '#F5C518' }}>100%</strong>
-                  <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Pure & Unadulterated</span>
+                  <strong className="block text-xl sm:text-2xl font-black text-[#F5C518]">100%</strong>
+                  <span className="text-xs text-slate-400">Pure Dairy</span>
                 </div>
                 <div>
-                  <strong style={{ display: 'block', fontSize: '1.4rem', fontWeight: 900, color: '#F5C518' }}>FSSAI</strong>
-                  <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Certified Quality</span>
+                  <strong className="block text-xl sm:text-2xl font-black text-[#F5C518]">FSSAI</strong>
+                  <span className="text-xs text-slate-400">Lab Certified</span>
                 </div>
                 <div>
-                  <strong style={{ display: 'block', fontSize: '1.4rem', fontWeight: 900, color: '#F5C518' }}>4.9 ★</strong>
-                  <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Customer Rating</span>
+                  <strong className="block text-xl sm:text-2xl font-black text-[#F5C518]">4.9 ★</strong>
+                  <span className="text-xs text-slate-400">User Rating</span>
                 </div>
               </div>
 
             </div>
 
             {/* Right Hero Image Card */}
-            <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-              <div style={{
-                position: 'relative',
-                borderRadius: '24px',
-                overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-                border: '2px solid rgba(245, 197, 24, 0.3)',
-                maxWidth: '480px',
-                width: '100%',
-                backgroundColor: '#1E293B'
-              }}>
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/30 max-w-md w-full bg-slate-800">
                 <img
                   src="/images/ghee_hero.jpg"
                   alt="Sai Krishna Vedic Pure Ghee"
-                  style={{ width: '100%', height: '420px', objectFit: 'cover', display: 'block' }}
+                  className="w-full h-80 sm:h-96 object-cover block"
                   onError={(e) => { e.target.src = '/uploads/product-1788196192064-385206.jpeg'; }}
                 />
 
                 {/* Overlay Badge */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  left: '1.5rem',
-                  right: '1.5rem',
-                  backgroundColor: 'rgba(15, 23, 42, 0.88)',
-                  backdropFilter: 'blur(10px)',
-                  padding: '1.25rem',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem'
-                }}>
-                  <div style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '50%',
-                    backgroundColor: '#F5C518',
-                    color: '#0033B4',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
+                <div className="absolute bottom-4 left-4 right-4 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-white/15 flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-[#F5C518] text-[#0033B4] flex items-center justify-center shrink-0">
                     <Award size={24} />
                   </div>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#FFF' }}>
+                    <h4 className="m-0 text-sm sm:text-base font-extrabold text-white">
                       Traditional Danedar Texture
                     </h4>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#CBD5E1' }}>
+                    <p className="m-0 text-xs text-slate-300">
                       Slowly simmered milk fat for maximum aroma & golden grains
                     </p>
                   </div>
@@ -287,49 +185,49 @@ export default function Home() {
       </section>
 
       {/* 2. Brand Value Proposition Pillars */}
-      <section style={{ padding: '4.5rem 0', backgroundColor: '#FFFFFF' }}>
-        <div className="container" style={{ maxWidth: '1500px', width: '96%' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-10">
+            <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-widest">
               Why Choose Sai Krishna
             </span>
-            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#0F172A', marginTop: '0.5rem' }}>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 mt-1 font-serif">
               The Purity Commitments We Live By
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2rem' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <div style={{ backgroundColor: '#FAF9F5', padding: '2rem', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(0, 51, 180, 0.08)', color: 'var(--primary-color)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-slate-200 text-center hover:shadow-md transition-shadow">
+              <div className="w-14 h-14 rounded-full bg-[#0033B4]/10 text-[#0033B4] inline-flex items-center justify-center mb-4">
                 <CheckCircle2 size={28} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.6rem' }}>100% Pure Dairy</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.6 }}>Directly sourced from trusted dairy farms, completely unadulterated with zero artificial preservatives or colors.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">100% Pure Dairy</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">Directly sourced from trusted dairy farms, completely unadulterated with zero artificial preservatives or colors.</p>
             </div>
 
-            <div style={{ backgroundColor: '#FAF9F5', padding: '2rem', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(245, 197, 24, 0.15)', color: '#D97706', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-slate-200 text-center hover:shadow-md transition-shadow">
+              <div className="w-14 h-14 rounded-full bg-amber-500/15 text-amber-600 inline-flex items-center justify-center mb-4">
                 <Flame size={28} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.6rem' }}>Granular (Danedar)</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.6 }}>Slowly simmered at controlled temperatures to build traditional golden grain texture and heavenly aroma.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Granular (Danedar)</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">Slowly simmered at controlled temperatures to build traditional golden grain texture and heavenly aroma.</p>
             </div>
 
-            <div style={{ backgroundColor: '#FAF9F5', padding: '2rem', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(0, 51, 180, 0.08)', color: 'var(--primary-color)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-slate-200 text-center hover:shadow-md transition-shadow">
+              <div className="w-14 h-14 rounded-full bg-[#0033B4]/10 text-[#0033B4] inline-flex items-center justify-center mb-4">
                 <Sparkles size={28} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.6rem' }}>Immunity & Vitality</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.6 }}>Rich in healthy fatty acids and essential vitamins A, D, E, and K that support gut health and energy.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Immunity & Vitality</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">Rich in healthy fatty acids and essential vitamins A, D, E, and K that support gut health and energy.</p>
             </div>
 
-            <div style={{ backgroundColor: '#FAF9F5', padding: '2rem', borderRadius: '16px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(245, 197, 24, 0.15)', color: '#D97706', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-slate-200 text-center hover:shadow-md transition-shadow">
+              <div className="w-14 h-14 rounded-full bg-amber-500/15 text-amber-600 inline-flex items-center justify-center mb-4">
                 <Shield size={28} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.6rem' }}>FSSAI Certified</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.6 }}>Processed under strict hygiene control and certified under License No. 10123049000182.</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">FSSAI Certified</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">Processed under strict hygiene control and certified under License No. 10123049000182.</p>
             </div>
 
           </div>
@@ -337,131 +235,59 @@ export default function Home() {
       </section>
 
       {/* 3. Category Spotlight Cards */}
-      <section style={{ padding: '4.5rem 0', backgroundColor: '#F8FAFC' }}>
-        <div className="container" style={{ maxWidth: '1500px', width: '96%' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+      <section className="py-12 sm:py-16 bg-slate-50">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-10">
+            <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-widest">
               Explore Categories
             </span>
-            <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#0F172A', marginTop: '0.5rem' }}>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 mt-1 font-serif">
               Find Your Perfect Ghee Variety
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }} className="products-3-grid">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Cow Ghee */}
-            <div style={{
-              backgroundColor: '#0033B4',
-              backgroundImage: 'linear-gradient(135deg, #002688 0%, #0033B4 100%)',
-              color: '#FFFFFF',
-              borderRadius: '20px',
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-md)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '280px'
-            }}>
+            <div className="bg-gradient-to-br from-[#002688] to-[#0033B4] text-white rounded-2xl p-8 shadow-md flex flex-col justify-between min-h-[280px]">
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F5C518', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Daily Cooking Choice</span>
-                <h3 style={{ fontSize: '1.85rem', fontWeight: 900, margin: '0.35rem 0 0.75rem 0' }}>Pure Cow Ghee</h3>
-                <p style={{ fontSize: '0.925rem', color: '#CBD5E1', lineHeight: 1.6 }}>Rich golden texture, divine aroma. Ideal for rotis, parathas, rice, and daily cooking.</p>
+                <span className="text-xs font-extrabold text-[#F5C518] uppercase tracking-wider">Daily Cooking Choice</span>
+                <h3 className="text-2xl font-black my-2 font-serif">Pure Cow Ghee</h3>
+                <p className="text-sm text-slate-300 leading-relaxed">Rich golden texture, divine aroma. Ideal for rotis, parathas, rice, and daily cooking.</p>
               </div>
               <Link
                 to="/shop?category=cow-ghee"
-                style={{
-                  backgroundColor: '#F5C518',
-                  color: '#0033B4',
-                  padding: '0.65rem 1.35rem',
-                  borderRadius: '30px',
-                  fontWeight: 900,
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  width: 'fit-content',
-                  marginTop: '1.5rem'
-                }}
+                className="bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4] px-5 py-2.5 rounded-full font-black text-xs sm:text-sm inline-flex items-center gap-1.5 w-fit mt-6 transition-colors"
               >
                 Shop Cow Ghee <ArrowRight size={15} />
               </Link>
             </div>
 
             {/* Buffalo Ghee */}
-            <div style={{
-              backgroundColor: '#0F172A',
-              backgroundImage: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-              color: '#FFFFFF',
-              borderRadius: '20px',
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-md)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '280px'
-            }}>
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-8 shadow-md flex flex-col justify-between min-h-[280px]">
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F5C518', textTransform: 'uppercase', letterSpacing: '1.5px' }}>High Smoke Point</span>
-                <h3 style={{ fontSize: '1.85rem', fontWeight: 900, margin: '0.35rem 0 0.75rem 0' }}>Premium Buffalo Ghee</h3>
-                <p style={{ fontSize: '0.925rem', color: '#94A3B8', lineHeight: 1.6 }}>Crisp white granular structure. Perfect for traditional Indian sweets, frying, and roasting.</p>
+                <span className="text-xs font-extrabold text-[#F5C518] uppercase tracking-wider">High Smoke Point</span>
+                <h3 className="text-2xl font-black my-2 font-serif">Premium Buffalo Ghee</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">Crisp white granular structure. Perfect for traditional Indian sweets, frying, and roasting.</p>
               </div>
               <Link
                 to="/shop?category=buffalo-ghee"
-                style={{
-                  backgroundColor: '#F5C518',
-                  color: '#0F172A',
-                  padding: '0.65rem 1.35rem',
-                  borderRadius: '30px',
-                  fontWeight: 900,
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  width: 'fit-content',
-                  marginTop: '1.5rem'
-                }}
+                className="bg-[#F5C518] hover:bg-[#D8AA0D] text-slate-900 px-5 py-2.5 rounded-full font-black text-xs sm:text-sm inline-flex items-center gap-1.5 w-fit mt-6 transition-colors"
               >
                 Shop Buffalo Ghee <ArrowRight size={15} />
               </Link>
             </div>
 
             {/* Vedic A2 Ghee */}
-            <div style={{
-              backgroundColor: '#F5C518',
-              backgroundImage: 'linear-gradient(135deg, #D49B00 0%, #F5C518 100%)',
-              color: '#0033B4',
-              borderRadius: '20px',
-              padding: '2.5rem',
-              boxShadow: 'var(--shadow-md)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '280px'
-            }}>
+            <div className="bg-gradient-to-br from-amber-500 to-[#F5C518] text-[#0033B4] rounded-2xl p-8 shadow-md flex flex-col justify-between min-h-[280px]">
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0033B4', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Ancient Bilona Process</span>
-                <h3 style={{ fontSize: '1.85rem', fontWeight: 900, margin: '0.35rem 0 0.75rem 0', color: '#0033B4' }}>Vedic A2 Ghee</h3>
-                <p style={{ fontSize: '0.925rem', color: '#1E293B', lineHeight: 1.6 }}>Hand-churned curd butter slowly boiled for maximum nutrients, digestion, and medicinal benefits.</p>
+                <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-wider">Ancient Bilona Process</span>
+                <h3 className="text-2xl font-black my-2 font-serif text-[#0033B4]">Vedic A2 Ghee</h3>
+                <p className="text-sm text-slate-900 leading-relaxed font-medium">Hand-churned curd butter slowly boiled for maximum nutrients, digestion, and medicinal benefits.</p>
               </div>
               <Link
                 to="/shop?category=premium-a2-ghee"
-                style={{
-                  backgroundColor: '#0033B4',
-                  color: '#FFFFFF',
-                  padding: '0.65rem 1.35rem',
-                  borderRadius: '30px',
-                  fontWeight: 900,
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  width: 'fit-content',
-                  marginTop: '1.5rem'
-                }}
+                className="bg-[#0033B4] hover:bg-[#002688] text-white px-5 py-2.5 rounded-full font-black text-xs sm:text-sm inline-flex items-center gap-1.5 w-fit mt-6 transition-colors"
               >
                 Shop A2 Ghee <ArrowRight size={15} />
               </Link>
@@ -472,34 +298,26 @@ export default function Home() {
       </section>
 
       {/* 4. Best Selling Products Catalog */}
-      <section style={{ padding: '5rem 0', backgroundColor: '#FFFFFF' }}>
-        <div className="container" style={{ maxWidth: '1500px', width: '96%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-10 gap-4">
             <div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+              <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-widest">
                 Storefront Catalog
               </span>
-              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: '#0F172A', marginTop: '0.4rem' }}>
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 mt-1 font-serif">
                 Featured Ghee Collection
               </h2>
             </div>
             <Link
               to="/shop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                color: 'var(--primary-color)',
-                fontWeight: 800,
-                fontSize: '0.95rem',
-                textDecoration: 'none'
-              }}
+              className="inline-flex items-center gap-1 text-[#0033B4] hover:text-[#002688] font-bold text-sm sm:text-base transition-colors"
             >
               Explore Full Shop <ChevronRight size={18} />
             </Link>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }} className="products-3-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => {
               const variants = Array.isArray(product.variants) && product.variants.length > 0
                 ? product.variants
@@ -514,64 +332,19 @@ export default function Home() {
               return (
                 <div
                   key={product.id}
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '16px',
-                    border: '1px solid var(--border-color)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    boxShadow: 'var(--shadow-sm)',
-                    transition: 'all 0.25s ease'
-                  }}
-                  className="shop-product-card"
+                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
                   {/* Image Container */}
-                  <div style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '240px',
-                    backgroundColor: '#FAF9F5',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    borderBottom: '1px solid var(--border-color)'
-                  }}>
-                    <span style={{
-                      position: 'absolute',
-                      top: '12px',
-                      left: '12px',
-                      backgroundColor: 'var(--primary-color)',
-                      color: '#FFF',
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      padding: '0.2rem 0.6rem',
-                      borderRadius: '12px',
-                      textTransform: 'uppercase',
-                      zIndex: 2
-                    }}>
+                  <div className="relative w-full h-60 bg-[#FAF9F5] flex items-center justify-center overflow-hidden border-b border-slate-100 p-4">
+                    <span className="absolute top-3 left-3 bg-[#0033B4] text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase z-10">
                       {product.category_name || 'Pure Ghee'}
                     </span>
 
                     <button
                       onClick={() => toggleWishlist(product)}
-                      style={{
-                        position: 'absolute',
-                        top: '12px',
-                        right: '12px',
-                        width: '34px',
-                        height: '34px',
-                        borderRadius: '50%',
-                        backgroundColor: '#FFF',
-                        border: '1px solid var(--border-color)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        color: inWish ? '#EF4444' : 'var(--text-light)',
-                        zIndex: 2
-                      }}
+                      className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer transition-colors z-10 ${
+                        inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                      }`}
                       title="Toggle Wishlist"
                     >
                       <Heart size={18} fill={inWish ? 'currentColor' : 'none'} />
@@ -580,48 +353,36 @@ export default function Home() {
                     <img
                       src={mainImage}
                       alt={product.name}
-                      style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}
-                      className="card-image-hover"
+                      className="max-w-[85%] max-h-[85%] object-contain transition-transform duration-500 hover:scale-105"
                       onError={(e) => { e.target.src = '/uploads/product-1788196192064-385206.jpeg'; }}
                     />
                   </div>
 
                   {/* Details */}
-                  <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>
-                      <Link to={`/product/${product.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>{product.name}</Link>
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="text-base sm:text-lg font-extrabold text-slate-900 mb-1 line-clamp-1 font-serif">
+                      <Link to={`/product/${product.slug}`} className="hover:text-[#0033B4] transition-colors">{product.name}</Link>
                     </h3>
 
-                    <p style={{
-                      fontSize: '0.875rem',
-                      color: 'var(--text-light)',
-                      lineHeight: 1.5,
-                      margin: '0.4rem 0 1rem 0',
-                      minHeight: '2.8em'
-                    }}>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 min-h-[2.8rem] line-clamp-2">
                       {truncateDescription(product.description, 18)}
                     </p>
 
                     {/* Variant Selector Pills */}
-                    <div style={{ marginBottom: '1rem' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', display: 'block', marginBottom: '0.35rem' }}>
+                    <div className="mb-4">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">
                         Package Options:
                       </span>
-                      <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      <div className="flex gap-1.5 flex-wrap">
                         {variants.map(v => (
                           <button
                             key={v.id}
                             onClick={() => handleSelectVariant(product.id, v)}
-                            style={{
-                              padding: '0.25rem 0.6rem',
-                              borderRadius: '16px',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                              border: activeVariant.id === v.id ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                              backgroundColor: activeVariant.id === v.id ? 'rgba(0, 51, 180, 0.08)' : '#FFF',
-                              color: activeVariant.id === v.id ? 'var(--primary-color)' : 'var(--text-dark)',
-                              cursor: 'pointer'
-                            }}
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                              activeVariant.id === v.id
+                                ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
+                                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                            }`}
                           >
                             {v.weight_or_volume}
                           </button>
@@ -630,29 +391,17 @@ export default function Home() {
                     </div>
 
                     {/* Price & Action */}
-                    <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="mt-auto pt-3 border-t border-slate-100 flex justify-between items-center">
                       <div>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', display: 'block' }}>{activeVariant.weight_or_volume}</span>
-                        <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--primary-color)' }}>
+                        <span className="text-[10px] text-slate-400 block">{activeVariant.weight_or_volume}</span>
+                        <span className="text-lg font-black text-[#0033B4]">
                           ₹{parseFloat(activeVariant.price).toFixed(2)}
                         </span>
                       </div>
 
                       <button
                         onClick={() => addToCart(product, activeVariant, 1)}
-                        style={{
-                          backgroundColor: 'var(--primary-color)',
-                          color: '#FFF',
-                          border: 'none',
-                          padding: '0.55rem 1rem',
-                          borderRadius: '8px',
-                          fontWeight: 700,
-                          fontSize: '0.85rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.35rem'
-                        }}
+                        className="bg-[#0033B4] hover:bg-[#002688] text-white px-4 py-2 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <ShoppingBag size={14} /> + Cart
                       </button>
@@ -667,70 +416,61 @@ export default function Home() {
       </section>
 
       {/* 5. Traditional Bilona Churning Story */}
-      <section style={{ padding: '5rem 0', backgroundColor: '#FFFDF0', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
-        <div className="container" style={{ maxWidth: '1440px', width: '95%' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }} className="hero-grid">
+      <section className="py-12 sm:py-16 bg-[#FFFDF0] border-t border-b border-amber-200/60">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            <div>
-              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+            <div className="lg:col-span-7">
+              <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-widest">
                 Vedic Heritage Craftsmanship
               </span>
-              <h2 style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--primary-color)', margin: '0.5rem 0 1.25rem 0' }}>
+              <h2 className="text-2xl sm:text-4xl font-black text-[#0033B4] my-2 font-serif">
                 The Traditional Bilona Churning Method
               </h2>
-              <p style={{ fontSize: '1.05rem', color: 'var(--text-light)', lineHeight: 1.65, marginBottom: '2rem' }}>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
                 Unlike commercial factories that process cream at high speeds, Sai Krishna Ghee follows ancient Vedic principles. Milk is curdled overnight, hand-churned with a wooden bilona to separate butter, and gently simmered over slow fire.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>1</div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#0033B4] text-white flex items-center justify-center font-extrabold text-sm shrink-0">1</div>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Whole A2 Milk Curdling</h4>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.9rem', color: 'var(--text-light)' }}>Fresh milk is boiled and fermented overnight into pure probiotics-rich curd.</p>
+                    <h4 className="m-0 text-sm sm:text-base font-bold text-slate-900">Whole A2 Milk Curdling</h4>
+                    <p className="m-0 text-xs sm:text-sm text-slate-600">Fresh milk is boiled and fermented overnight into pure probiotics-rich curd.</p>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>2</div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#0033B4] text-white flex items-center justify-center font-extrabold text-sm shrink-0">2</div>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Bi-Directional Wood Churning</h4>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.9rem', color: 'var(--text-light)' }}>Curd is churned using wooden bilona rods to extract white cultured butter (Makkhan).</p>
+                    <h4 className="m-0 text-sm sm:text-base font-bold text-slate-900">Bi-Directional Wood Churning</h4>
+                    <p className="m-0 text-xs sm:text-sm text-slate-600">Curd is churned using wooden bilona rods to extract white cultured butter (Makkhan).</p>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--primary-color)', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0 }}>3</div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#0033B4] text-white flex items-center justify-center font-extrabold text-sm shrink-0">3</div>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Slow Fire Clarification</h4>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.9rem', color: 'var(--text-light)' }}>Butter is gently clarified to produce fragrant, golden granular ghee.</p>
+                    <h4 className="m-0 text-sm sm:text-base font-bold text-slate-900">Slow Fire Clarification</h4>
+                    <p className="m-0 text-xs sm:text-sm text-slate-600">Butter is gently clarified to produce fragrant, golden granular ghee.</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <div style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '20px',
-                padding: '2.5rem',
-                border: '1px solid var(--border-color)',
-                boxShadow: 'var(--shadow-md)',
-                textAlign: 'center',
-                maxWidth: '450px',
-                width: '100%'
-              }}>
-                <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(245, 197, 24, 0.2)', color: '#D97706', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="bg-white rounded-2xl p-6 sm:p-8 border border-amber-200 shadow-md text-center max-w-md w-full">
+                <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 inline-flex items-center justify-center mb-4">
                   <Award size={32} />
                 </div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--primary-color)', marginBottom: '0.75rem' }}>
+                <h3 className="text-lg sm:text-xl font-black text-[#0033B4] mb-3 font-serif">
                   100% FSSAI Certified Plant
                 </h3>
-                <p style={{ fontSize: '0.925rem', color: 'var(--text-light)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
                   Processed under rigorous hygiene and safety protocols. Every batch is lab tested for purity, free from chemicals or vegetable oils.
                 </p>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', backgroundColor: 'var(--bg-cream)', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                  LIC NO: <span style={{ color: 'var(--primary-color)' }}>10123049000182</span>
+                <div className="text-sm sm:text-base font-extrabold text-slate-900 bg-amber-50 py-3 px-4 rounded-xl border border-amber-200">
+                  LIC NO: <span className="text-[#0033B4]">10123049000182</span>
                 </div>
               </div>
             </div>

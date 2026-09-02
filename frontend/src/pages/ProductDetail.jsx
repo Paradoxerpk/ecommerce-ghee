@@ -161,28 +161,8 @@ export default function ProductDetail() {
     }));
   };
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div>Loading product details...</div>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="section container" style={{ textAlign: 'center', padding: '5rem 0' }}>
-        <h2>Product Not Found</h2>
-        <p>The requested ghee product could not be found.</p>
-        <Link to="/shop" className="btn btn-primary" style={{ marginTop: '1rem', display: 'inline-block' }}>
-          Return to Shop
-        </Link>
-      </div>
-    );
-  }
-
-  const isWish = isInWishlist(product.id);
-  const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : true;
+  const isWish = product ? isInWishlist(product.id) : false;
+  const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
 
   const handleAddToCart = () => {
     if (!selectedVariant || isOutOfStock) return;
@@ -231,6 +211,25 @@ export default function ProductDetail() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="py-20 text-center font-semibold text-slate-500">
+        Loading Product Details...
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="py-20 text-center">
+        <h2 className="text-2xl font-bold text-slate-800 mb-4">Product Not Found</h2>
+        <Link to="/shop" className="btn btn-primary px-6 py-2.5">
+          Back to Shop Catalog
+        </Link>
+      </div>
+    );
+  }
+
   // Calculate average rating
   const reviewsList = product.reviews || [];
   const avgRating = reviewsList.length > 0
@@ -238,58 +237,40 @@ export default function ProductDetail() {
     : '5.0';
 
   return (
-    <div className="section" style={{ padding: '3rem 0' }}>
-      <div className="container">
+    <div className="py-8 sm:py-12 bg-[#FAF9F6]">
+      <div className="container mx-auto px-4 max-w-7xl pb-16 md:pb-0">
         
         {/* Back Link */}
-        <Link to="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-light)', marginBottom: '2rem', textDecoration: 'none', fontWeight: 600 }}>
+        <Link to="/shop" className="inline-flex items-center gap-1.5 text-slate-500 hover:text-[#0033B4] font-semibold text-sm mb-6 transition-colors">
           <ArrowLeft size={16} /> Back to Catalog
         </Link>
 
         {/* 1. Product Details Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'start' }} className="product-detail-grid">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Gallery Column */}
-          <div>
-            <div style={{
-              width: '100%',
-              height: '420px',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              backgroundColor: 'var(--bg-cream)',
-              border: '1px solid var(--border-color)',
-              marginBottom: '1rem',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
+          <div className="lg:col-span-6">
+            <div className="w-full h-80 sm:h-96 lg:h-[420px] rounded-2xl overflow-hidden bg-[#FCFAF2] border border-slate-200 mb-4 flex items-center justify-center p-6 shadow-sm">
               <img
                 src={selectedImage || (product.images && product.images[0]) || '/images/cow_ghee_front.webp'}
                 alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                className="max-w-full max-h-full object-contain"
                 onError={(e) => { e.target.src = '/images/cow_ghee_front.webp'; }}
               />
             </div>
 
             {/* Thumbnail switcher */}
             {product.images && product.images.length > 1 && (
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div className="flex gap-3 overflow-x-auto pb-2">
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(img)}
-                    style={{
-                      width: '70px',
-                      height: '70px',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      border: selectedImage === img ? '2px solid var(--primary-color)' : '1px solid var(--border-color)',
-                      cursor: 'pointer',
-                      padding: 0,
-                      backgroundColor: 'var(--bg-cream)'
-                    }}
+                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden cursor-pointer border p-1 bg-[#FCFAF2] shrink-0 transition-all ${
+                      selectedImage === img ? 'border-2 border-[#0033B4]' : 'border-slate-200'
+                    }`}
                   >
-                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src={img} alt="" className="w-full h-full object-contain" />
                   </button>
                 ))}
               </div>
@@ -297,36 +278,36 @@ export default function ProductDetail() {
           </div>
 
           {/* Info Column */}
-          <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--secondary-color)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <div className="lg:col-span-6">
+            <span className="text-xs font-extrabold text-[#F5C518] uppercase tracking-wider block">
               {product.category_name || 'Sai Krishna Pure Ghee'}
             </span>
-            <h1 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-body)', fontWeight: 800, margin: '0.25rem 0 1rem 0', lineHeight: 1.2 }}>
+            <h1 className="text-2xl sm:text-4xl font-extrabold font-serif text-slate-900 my-2 leading-tight">
               {product.name}
             </h1>
 
             {/* Rating Stars */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', color: '#f59e0b' }}>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="flex text-amber-400">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={18} fill={i < Math.round(avgRating) ? '#f59e0b' : 'none'} stroke="#f59e0b" />
+                  <Star key={i} size={18} fill={i < Math.round(avgRating) ? "currentColor" : "none"} stroke="currentColor" />
                 ))}
               </div>
-              <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{avgRating} / 5.0</span>
-              <span style={{ color: 'var(--text-light)', fontSize: '0.875rem' }}>({reviewsList.length} customer reviews)</span>
+              <span className="font-bold text-sm text-slate-800">{avgRating} / 5.0</span>
+              <span className="text-slate-400 text-xs sm:text-sm">({reviewsList.length} customer reviews)</span>
             </div>
 
-            <p style={{ color: 'var(--text-dark)', lineHeight: 1.6, fontSize: '1rem', marginBottom: '2rem' }}>
+            <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
               {product.description}
             </p>
 
             {/* Variant Selector */}
             {product.variants && product.variants.length > 0 && (
-              <div style={{ marginBottom: '2rem' }}>
-                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.75rem' }}>
+              <div className="mb-6">
+                <label className="block font-bold text-xs sm:text-sm text-slate-800 mb-3">
                   Select Package Size / Weight:
                 </label>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <div className="flex gap-2.5 flex-wrap">
                   {product.variants.map((v) => {
                     const isSelected = selectedVariant && selectedVariant.id === v.id;
                     const vDisabled = v.stock <= 0;
@@ -335,16 +316,13 @@ export default function ProductDetail() {
                         key={v.id}
                         onClick={() => setSelectedVariant(v)}
                         disabled={vDisabled}
-                        style={{
-                          padding: '0.65rem 1.25rem',
-                          borderRadius: '8px',
-                          border: isSelected ? '2px solid var(--primary-color)' : '1px solid var(--border-color)',
-                          backgroundColor: isSelected ? 'rgba(46, 125, 50, 0.08)' : vDisabled ? '#f3f4f6' : '#fff',
-                          color: vDisabled ? '#9ca3af' : 'var(--text-dark)',
-                          fontWeight: 700,
-                          cursor: vDisabled ? 'not-allowed' : 'pointer',
-                          textDecoration: vDisabled ? 'line-through' : 'none'
-                        }}
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#0033B4]/10 border-[#0033B4] text-[#0033B4]'
+                            : vDisabled
+                            ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed line-through'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                        }`}
                       >
                         {v.weight_or_volume} — ₹{parseFloat(v.price).toFixed(2)}
                       </button>
@@ -356,48 +334,46 @@ export default function ProductDetail() {
 
             {/* Price & Stock status */}
             {selectedVariant && (
-              <div style={{ backgroundColor: 'var(--bg-cream)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>Unit Price</span>
-                    <h2 style={{ fontSize: '2rem', color: 'var(--primary-color)', fontFamily: 'var(--font-body)', fontWeight: 800, margin: 0 }}>
-                      ₹{parseFloat(selectedVariant.price).toFixed(2)}
-                    </h2>
-                  </div>
+              <div className="bg-[#FCFAF2] p-4 sm:p-5 rounded-2xl border border-slate-200 mb-6 flex justify-between items-center">
+                <div>
+                  <span className="text-xs text-slate-400 block">Unit Price</span>
+                  <h2 className="text-2xl sm:text-3xl font-black text-[#0033B4] font-serif m-0">
+                    ₹{parseFloat(selectedVariant.price).toFixed(2)}
+                  </h2>
+                </div>
 
-                  <div style={{ textAlign: 'right' }}>
-                    {isOutOfStock ? (
-                      <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700, fontSize: '0.95rem' }}>
-                        <AlertTriangle size={18} /> Out of Stock
-                      </span>
-                    ) : selectedVariant.stock < 10 ? (
-                      <span style={{ color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700, fontSize: '0.95rem' }}>
-                        <AlertTriangle size={18} /> Low Stock (Only {selectedVariant.stock} left!)
-                      </span>
-                    ) : (
-                      <span style={{ color: '#16a34a', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700, fontSize: '0.95rem' }}>
-                        <Check size={18} /> In Stock (SKU: {selectedVariant.sku})
-                      </span>
-                    )}
-                  </div>
+                <div className="text-right">
+                  {isOutOfStock ? (
+                    <span className="text-red-500 flex items-center gap-1 font-bold text-xs sm:text-sm">
+                      <AlertTriangle size={18} /> Out of Stock
+                    </span>
+                  ) : selectedVariant.stock < 10 ? (
+                    <span className="text-amber-600 flex items-center gap-1 font-bold text-xs sm:text-sm">
+                      <AlertTriangle size={18} /> Low Stock ({selectedVariant.stock} left!)
+                    </span>
+                  ) : (
+                    <span className="text-emerald-600 flex items-center gap-1 font-bold text-xs sm:text-sm">
+                      <Check size={18} /> In Stock (SKU: {selectedVariant.sku})
+                    </span>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Quantity and Cart Actions */}
-            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', marginBottom: '2.5rem' }}>
+            <div className="flex gap-3 items-center mb-8">
               {!isOutOfStock && (
-                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', borderRadius: '30px', overflow: 'hidden', height: '48px', backgroundColor: '#fff' }}>
+                <div className="flex items-center border border-slate-200 rounded-full h-12 bg-white shrink-0">
                   <button
                     onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                    style={{ background: 'none', border: 'none', width: '40px', height: '100%', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
+                    className="w-10 h-full flex items-center justify-center font-bold text-lg text-slate-600 hover:text-slate-900"
                   >
                     -
                   </button>
-                  <span style={{ width: '40px', textAlign: 'center', fontWeight: 600 }}>{quantity}</span>
+                  <span className="w-10 text-center font-bold text-slate-800">{quantity}</span>
                   <button
                     onClick={() => setQuantity(prev => Math.min(selectedVariant.stock, prev + 1))}
-                    style={{ background: 'none', border: 'none', width: '40px', height: '100%', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.1rem' }}
+                    className="w-10 h-full flex items-center justify-center font-bold text-lg text-slate-600 hover:text-slate-900"
                   >
                     +
                   </button>
@@ -407,27 +383,16 @@ export default function ProductDetail() {
               <button
                 onClick={handleAddToCart}
                 disabled={isOutOfStock}
-                className="btn btn-primary"
-                style={{ flexGrow: 1, height: '48px', borderRadius: '30px' }}
+                className="btn btn-primary flex-1 h-12 text-sm sm:text-base font-extrabold"
               >
                 <ShoppingBag size={18} /> {isOutOfStock ? 'Sold Out' : 'Add to Shopping Cart'}
               </button>
 
               <button
                 onClick={() => toggleWishlist(product)}
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: isWish ? '#ef4444' : 'var(--text-light)',
-                  transition: 'all 0.2s'
-                }}
+                className={`w-12 h-12 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer shrink-0 transition-colors ${
+                  isWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                }`}
                 title={isWish ? "Remove from Wishlist" : "Add to Wishlist"}
               >
                 <Heart size={20} fill={isWish ? "currentColor" : "none"} />
@@ -435,13 +400,13 @@ export default function ProductDetail() {
             </div>
 
             {/* Quality Badges */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-light)' }}>
-                <Shield size={16} style={{ color: 'var(--primary-color)' }} />
+            <div className="grid grid-cols-2 gap-4 border-t border-slate-200 pt-6">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-600 font-medium">
+                <Shield size={16} className="text-[#0033B4]" />
                 <span>100% Pure Sourced Milk</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-light)' }}>
-                <Shield size={16} style={{ color: 'var(--primary-color)' }} />
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-600 font-medium">
+                <Shield size={16} className="text-[#0033B4]" />
                 <span>No Added Preservatives</span>
               </div>
             </div>
@@ -449,35 +414,27 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* 2. Featured Ghee Collection Section (Inserted In-Between Product Detail & Reviews) */}
+        {/* 2. Featured Ghee Collection Section */}
         {relatedProducts.length > 0 && (
-          <section style={{ marginTop: '4rem', borderTop: '1px solid var(--border-color)', paddingTop: '3.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <section className="mt-16 border-t border-slate-200 pt-12">
+            <div className="flex justify-between items-end mb-8 flex-wrap gap-4">
               <div>
-                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary-color)', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-widest">
                   STOREFRONT CATALOG
                 </span>
-                <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0F172A', marginTop: '0.3rem' }}>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 font-serif">
                   Featured Ghee Collection
                 </h2>
               </div>
               <Link
                 to="/shop"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  color: 'var(--primary-color)',
-                  fontWeight: 800,
-                  fontSize: '0.95rem',
-                  textDecoration: 'none'
-                }}
+                className="inline-flex items-center gap-1 text-[#0033B4] hover:text-[#002688] font-bold text-sm transition-colors"
               >
                 Explore Full Shop <ChevronRight size={18} />
               </Link>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }} className="products-3-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedProducts.map((p) => {
                 const variants = Array.isArray(p.variants) && p.variants.length > 0
                   ? p.variants
@@ -490,131 +447,70 @@ export default function ProductDetail() {
                 return (
                   <div
                     key={p.id}
-                    style={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: '16px',
-                      border: '1px solid var(--border-color)',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      boxShadow: 'var(--shadow-sm)',
-                      transition: 'all 0.25s ease'
-                    }}
-                    className="shop-product-card"
+                    className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                   >
                     {/* Product Image Container */}
-                    <div style={{
-                      position: 'relative',
-                      width: '100%',
-                      height: '240px',
-                      backgroundColor: 'var(--bg-cream)',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderBottom: '1px solid var(--border-color)'
-                    }}>
-                      <span style={{
-                        position: 'absolute',
-                        top: '12px',
-                        left: '12px',
-                        backgroundColor: 'var(--primary-color)',
-                        color: '#fff',
-                        padding: '0.2rem 0.65rem',
-                        borderRadius: '20px',
-                        fontSize: '0.7rem',
-                        fontWeight: 800,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        zIndex: 2
-                      }}>
+                    <div className="relative w-full h-56 bg-[#FAF9F5] overflow-hidden flex items-center justify-center border-b border-slate-100 p-4">
+                      <span className="absolute top-3 left-3 bg-[#0033B4] text-white px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide z-10">
                         {p.category_name || 'Pure Ghee'}
                       </span>
 
                       <button
                         onClick={() => toggleWishlist(p)}
-                        style={{
-                          position: 'absolute',
-                          top: '12px',
-                          right: '12px',
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '50%',
-                          backgroundColor: '#fff',
-                          border: '1px solid var(--border-color)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          color: inWish ? '#ef4444' : 'var(--text-light)',
-                          zIndex: 2
-                        }}
+                        className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer shadow-sm z-10 transition-colors ${
+                          inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                        }`}
                         title="Toggle Wishlist"
                       >
                         <Heart size={18} fill={inWish ? "currentColor" : "none"} />
                       </button>
 
-                      <Link to={`/product/${p.slug}`} style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
+                      <Link to={`/product/${p.slug}`} className="w-full h-full flex items-center justify-center p-2">
                         <img
                           src={mainImage}
                           alt={p.name}
-                          style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}
-                          className="card-image-hover"
+                          className="max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
                           onError={(e) => { e.target.src = '/images/cow_ghee_front.webp'; }}
                         />
                       </Link>
                     </div>
 
-                    {/* Product Details Body */}
-                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    {/* Details */}
+                    <div className="p-5 flex flex-col flex-1">
                       
-                      {/* Rating Stars Summary */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.5rem' }}>
-                        <div style={{ display: 'flex', color: '#f59e0b' }}>
-                          <Star size={14} fill="#f59e0b" stroke="#f59e0b" />
+                      <div className="flex items-center gap-1 mb-2">
+                        <div className="flex text-amber-400">
+                          <Star size={14} fill="currentColor" stroke="currentColor" />
                         </div>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>5.0</span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
-                          ({p.reviews ? p.reviews.length : 5} reviews)
-                        </span>
+                        <span className="text-xs font-bold text-slate-800">5.0</span>
+                        <span className="text-xs text-slate-400">({p.reviews ? p.reviews.length : 5})</span>
                       </div>
 
-                      <Link to={`/product/${p.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>
+                      <Link to={`/product/${p.slug}`}>
+                        <h3 className="text-base font-extrabold text-slate-900 mb-1 line-clamp-1 font-serif hover:text-[#0033B4] transition-colors">
                           {p.name}
                         </h3>
                       </Link>
 
-                      <p style={{
-                        fontSize: '0.875rem',
-                        color: 'var(--text-light)',
-                        lineHeight: 1.5,
-                        margin: '0.4rem 0 1rem 0',
-                        minHeight: '2.8em'
-                      }}>
+                      <p className="text-xs text-slate-500 leading-relaxed mb-4 min-h-[2.8rem] line-clamp-2">
                         {truncateDescription(p.description, 18)}
                       </p>
 
                       {/* Package Options */}
-                      <div style={{ marginBottom: '1rem' }}>
-                        <span style={{ fontSize: '0.725rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', display: 'block', marginBottom: '0.35rem' }}>
+                      <div className="mb-4">
+                        <span className="text-[10px] font-extrabold text-slate-400 block mb-1.5 uppercase">
                           PACKAGE OPTIONS:
                         </span>
-                        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                        <div className="flex gap-1.5 flex-wrap">
                           {variants.map(v => (
                             <button
                               key={v.id}
                               onClick={() => handleSelectVariantForProduct(p.id, v)}
-                              style={{
-                                padding: '0.25rem 0.6rem',
-                                borderRadius: '16px',
-                                fontSize: '0.725rem',
-                                fontWeight: 700,
-                                border: activeVariant.id === v.id ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                                backgroundColor: activeVariant.id === v.id ? 'rgba(0, 51, 180, 0.08)' : '#FFF',
-                                color: activeVariant.id === v.id ? 'var(--primary-color)' : 'var(--text-dark)',
-                                cursor: 'pointer'
-                              }}
+                              className={`text-xs font-bold px-2 py-1 rounded-md cursor-pointer transition-all ${
+                                activeVariant.id === v.id
+                                  ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
+                                  : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                              }`}
                             >
                               {v.weight_or_volume}
                             </button>
@@ -623,50 +519,27 @@ export default function ProductDetail() {
                       </div>
 
                       {/* Price & Action */}
-                      <div style={{ marginTop: 'auto', paddingTop: '0.85rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div className="mt-auto pt-3 border-t border-slate-100 flex justify-between items-center">
                         <div>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', display: 'block' }}>{activeVariant.weight_or_volume}</span>
-                          <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--primary-color)' }}>
+                          <span className="text-[10px] text-slate-400 block">{activeVariant.weight_or_volume}</span>
+                          <span className="text-lg font-black text-[#0033B4]">
                             ₹{parseFloat(activeVariant.price).toFixed(2)}
                           </span>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <div className="flex gap-1.5">
                           <button
                             onClick={() => addToCart(p, activeVariant, 1)}
-                            style={{
-                              backgroundColor: '#F5C518',
-                              color: '#0033B4',
-                              border: 'none',
-                              padding: '0.55rem 0.85rem',
-                              borderRadius: '8px',
-                              fontWeight: 900,
-                              fontSize: '0.8rem',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.3rem'
-                            }}
+                            className="bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4] px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer"
                           >
                             <ShoppingBag size={14} /> + Cart
                           </button>
 
                           <Link
                             to={`/product/${p.slug}`}
-                            style={{
-                              backgroundColor: '#0033B4',
-                              color: '#FFF',
-                              padding: '0.55rem 0.85rem',
-                              borderRadius: '8px',
-                              fontWeight: 700,
-                              fontSize: '0.8rem',
-                              textDecoration: 'none',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.2rem'
-                            }}
+                            className="bg-[#0033B4] hover:bg-[#002688] text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
                           >
-                            View <ArrowRight size={13} />
+                            View <ArrowRight size={14} />
                           </Link>
                         </div>
                       </div>
@@ -680,67 +553,52 @@ export default function ProductDetail() {
         )}
 
         {/* 3. Product Reviews & Ratings Section */}
-        <section style={{ marginTop: '4rem', borderTop: '1px solid var(--border-color)', paddingTop: '3.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <section className="mt-16 border-t border-slate-200 pt-12">
+          <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
             <div>
-              <h2 style={{ fontSize: '1.75rem', color: 'var(--primary-color)', margin: 0, fontWeight: 800 }}>
+              <h2 className="text-2xl font-bold font-serif text-[#0033B4] m-0">
                 Customer Reviews & Ratings
               </h2>
-              <span style={{ fontSize: '0.875rem', color: 'var(--text-light)' }}>
+              <span className="text-xs sm:text-sm text-slate-500">
                 Overall Rating: <strong>{avgRating} / 5.0</strong> based on {reviewsList.length} review(s).
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '3rem', alignItems: 'start' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Write a Review Card */}
-            <div style={{ backgroundColor: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '1.75rem', boxShadow: 'var(--shadow-sm)' }}>
-              <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', fontWeight: 800 }}>Write a Product Review</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '1.25rem' }}>
+            <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h3 className="text-lg font-extrabold text-slate-900 mb-1">Write a Product Review</h3>
+              <p className="text-xs text-slate-500 mb-5">
                 Share your feedback on aroma, taste, and quality with other buyers.
               </p>
 
               {reviewMsg && (
-                <div style={{
-                  padding: '0.75rem 1rem',
-                  borderRadius: '8px',
-                  marginBottom: '1rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  backgroundColor: reviewMsg.includes('Thank you') ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                  color: reviewMsg.includes('Thank you') ? '#16a34a' : '#ef4444',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}>
+                <div className={`p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2 ${
+                  reviewMsg.includes('Thank you') ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                }`}>
                   <CheckCircle size={16} />
                   <span>{reviewMsg}</span>
                 </div>
               )}
 
-              <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
                 
                 {/* Rating Selection */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Select Rating Stars *
                   </label>
-                  <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map(star => (
                       <button
                         key={star}
                         type="button"
                         onClick={() => setNewRating(star)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: '0.2rem',
-                          color: star <= newRating ? '#f59e0b' : '#ccc'
-                        }}
+                        className={`p-1 ${star <= newRating ? 'text-amber-400' : 'text-slate-300'}`}
                       >
-                        <Star size={24} fill={star <= newRating ? '#f59e0b' : 'none'} />
+                        <Star size={24} fill={star <= newRating ? "currentColor" : "none"} />
                       </button>
                     ))}
                   </div>
@@ -748,7 +606,7 @@ export default function ProductDetail() {
 
                 {/* Reviewer Name */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Your Name / Display Title
                   </label>
                   <input
@@ -756,19 +614,13 @@ export default function ProductDetail() {
                     value={reviewerName}
                     onChange={e => setReviewerName(e.target.value)}
                     placeholder="e.g. Ananya Rao"
-                    style={{
-                      width: '100%',
-                      padding: '0.6rem 0.85rem',
-                      borderRadius: '8px',
-                      border: '1px solid var(--border-color)',
-                      fontSize: '0.9rem'
-                    }}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   />
                 </div>
 
                 {/* Comment */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Your Detailed Review *
                   </label>
                   <textarea
@@ -777,22 +629,14 @@ export default function ProductDetail() {
                     onChange={e => setNewComment(e.target.value)}
                     placeholder="Tell us about the aroma, taste, and experience..."
                     required
-                    style={{
-                      width: '100%',
-                      padding: '0.6rem 0.85rem',
-                      borderRadius: '8px',
-                      border: '1px solid var(--border-color)',
-                      fontSize: '0.9rem',
-                      lineHeight: '1.4'
-                    }}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={submittingReview}
-                  className="btn btn-primary"
-                  style={{ borderRadius: '8px', padding: '0.65rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontWeight: 700 }}
+                  className="btn btn-primary w-full py-2.5 text-sm font-bold flex items-center justify-center gap-2"
                 >
                   <Send size={16} /> {submittingReview ? 'Submitting...' : 'Submit Review'}
                 </button>
@@ -801,46 +645,40 @@ export default function ProductDetail() {
             </div>
 
             {/* Reviews List Column */}
-            <div>
+            <div className="lg:col-span-7">
               {reviewsList.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div className="space-y-4">
                   {reviewsList.map((rev, idx) => (
                     <div
                       key={rev.id || idx}
-                      style={{
-                        backgroundColor: '#fff',
-                        borderRadius: '12px',
-                        padding: '1.25rem 1.5rem',
-                        border: '1px solid var(--border-color)',
-                        boxShadow: 'var(--shadow-sm)'
-                      }}
+                      className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm"
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--text-dark)', fontSize: '0.95rem' }}>
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="font-bold text-slate-900 text-sm">
                           {rev.user_name || 'Verified Customer'}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>
+                        <div className="text-xs text-slate-400">
                           {rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', color: '#f59e0b', marginBottom: '0.5rem' }}>
+                      <div className="flex text-amber-400 mb-2">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={14} fill={i < rev.rating ? '#f59e0b' : 'none'} stroke="#f59e0b" />
+                          <Star key={i} size={14} fill={i < rev.rating ? "currentColor" : "none"} />
                         ))}
                       </div>
 
-                      <p style={{ color: 'var(--text-dark)', fontSize: '0.9rem', margin: 0, lineHeight: 1.5 }}>
+                      <p className="text-slate-700 text-sm m-0 leading-relaxed">
                         {rev.comment}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#fff', borderRadius: '12px', border: '1px solid var(--border-color)', color: 'var(--text-light)' }}>
-                  <Star size={36} style={{ opacity: 0.3, marginBottom: '0.5rem' }} />
-                  <h4>No Reviews Yet</h4>
-                  <p style={{ fontSize: '0.875rem' }}>Be the first customer to leave a review for this product!</p>
+                <div className="text-center py-12 bg-white rounded-xl border border-slate-200 text-slate-400">
+                  <Star size={36} className="mx-auto opacity-30 mb-2" />
+                  <h4 className="font-bold text-slate-700 text-base mb-1">No Reviews Yet</h4>
+                  <p className="text-xs">Be the first customer to leave a review for this product!</p>
                 </div>
               )}
             </div>
@@ -849,6 +687,46 @@ export default function ProductDetail() {
         </section>
 
       </div>
+
+      {/* Mobile Sticky Bottom Action Bar */}
+      {selectedVariant && (
+        <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 md:hidden flex items-center justify-between shadow-2xl">
+          <div>
+            <span className="text-[10px] text-slate-400 block uppercase font-bold">{selectedVariant.weight_or_volume}</span>
+            <span className="text-lg font-black text-[#0033B4]">
+              ₹{(parseFloat(selectedVariant.price) * quantity).toFixed(2)}
+            </span>
+          </div>
+
+          <div className="flex gap-2 items-center">
+            {!isOutOfStock && (
+              <div className="flex items-center border border-slate-200 rounded-lg h-9 bg-white">
+                <button
+                  onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                  className="w-7 h-full text-xs font-bold text-slate-600"
+                >
+                  -
+                </button>
+                <span className="w-6 text-center text-xs font-bold">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(prev => Math.min(selectedVariant.stock, prev + 1))}
+                  className="w-7 h-full text-xs font-bold text-slate-600"
+                >
+                  +
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={handleAddToCart}
+              disabled={isOutOfStock}
+              className="bg-[#0033B4] hover:bg-[#002688] text-white px-4 py-2 rounded-lg text-xs font-extrabold flex items-center gap-1 shadow-md"
+            >
+              <ShoppingBag size={14} /> {isOutOfStock ? 'Sold Out' : 'Add to Cart'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -28,19 +28,19 @@ export default function OrderSuccess() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div>Loading order receipt...</div>
+      <div className="py-20 text-center text-slate-500 font-semibold min-h-[60vh]">
+        Loading order receipt...
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="section" style={{ textAlign: 'center' }}>
-        <div className="container">
-          <h2>Order Not Found</h2>
-          <p>We could not find details for the specified order reference.</p>
-          <Link to="/shop" className="btn btn-primary" style={{ marginTop: '1.5rem' }}>
+      <div className="py-16 text-center bg-[#FAF9F6] min-h-[60vh] flex items-center justify-center">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold font-serif text-slate-800 mb-2">Order Not Found</h2>
+          <p className="text-slate-500 text-sm mb-6">We could not find details for the specified order reference.</p>
+          <Link to="/shop" className="btn btn-primary px-6 py-2.5 text-sm">
             Back to Shop
           </Link>
         </div>
@@ -49,114 +49,99 @@ export default function OrderSuccess() {
   }
 
   return (
-    <div className="section">
-      <div className="container" style={{ maxWidth: '800px' }}>
+    <div className="py-12 bg-[#FAF9F6] min-h-screen">
+      <div className="container mx-auto px-4 max-w-3xl">
         
         {/* Success Header Message */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <div style={{ display: 'inline-flex', color: '#2e7d32', marginBottom: '1rem' }}>
-            <CheckCircle size={64} fill="rgba(46, 125, 50, 0.1)" />
+        <div className="text-center mb-10">
+          <div className="inline-flex text-emerald-600 mb-4">
+            <CheckCircle size={64} className="fill-emerald-100" />
           </div>
-          <h1 style={{ fontSize: '2.5rem', color: 'var(--text-dark)' }}>Order Confirmed!</h1>
-          <p style={{ color: 'var(--text-light)', fontSize: '1.1rem', marginTop: '0.5rem', maxWidth: '600px', margin: '0.5rem auto 0 auto' }}>
+          <h1 className="text-3xl sm:text-4xl font-black font-serif text-slate-900 mb-2">Order Confirmed!</h1>
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
             Thank you for shopping with Sai Krishna Ghee. Your order has been registered successfully and is now being prepared for dispatch.
           </p>
         </div>
 
         {/* Info Grid summary */}
-        <div style={{
-          backgroundColor: '#fff',
-          borderRadius: '16px',
-          border: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-sm)',
-          overflow: 'hidden',
-          marginBottom: '2rem'
-        }}>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
           {/* Header block */}
-          <div style={{ backgroundColor: 'var(--bg-cream)', padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '1rem', fontSize: '0.9rem' }}>
+          <div className="bg-[#FCFAF2] p-4 sm:p-5 border-b border-slate-200 flex flex-wrap justify-between items-center gap-4 text-xs sm:text-sm">
             <div>
-              <span style={{ color: 'var(--text-light)', display: 'block' }}>Order Reference ID (Unguessable Tracker)</span>
-              <strong style={{ color: 'var(--primary-color)', fontSize: '0.95rem' }}>{order.id}</strong>
+              <span className="text-slate-400 block text-[10px] sm:text-xs font-bold uppercase">Order Reference ID</span>
+              <strong className="text-[#0033B4] font-mono">{order.id}</strong>
             </div>
             <div>
-              <span style={{ color: 'var(--text-light)', display: 'block' }}>Date & Time Placed</span>
-              <strong>{new Date(order.created_at).toLocaleString()}</strong>
+              <span className="text-slate-400 block text-[10px] sm:text-xs font-bold uppercase">Date & Time Placed</span>
+              <strong className="text-slate-800">{new Date(order.created_at).toLocaleString()}</strong>
             </div>
             <div>
-              <span style={{ color: 'var(--text-light)', display: 'block' }}>Order Status</span>
-              <span style={{
-                backgroundColor: order.status === 'paid' || order.status === 'processing' ? 'rgba(46,125,50,0.1)' : 'rgba(0,51,180,0.1)',
-                color: order.status === 'paid' || order.status === 'processing' ? '#2e7d32' : 'var(--primary-color)',
-                padding: '0.2rem 0.6rem',
-                borderRadius: '12px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                textTransform: 'uppercase'
-              }}>
+              <span className="text-slate-400 block text-[10px] sm:text-xs font-bold uppercase">Status</span>
+              <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${
+                order.status === 'paid' || order.status === 'processing' ? 'bg-emerald-100 text-emerald-800' : 'bg-[#0033B4]/10 text-[#0033B4]'
+              }`}>
                 {order.status}
               </span>
             </div>
           </div>
 
-          <div style={{ padding: '1.75rem' }}>
+          <div className="p-5 sm:p-8">
             {/* 1. Itemized Receipt list */}
-            <h3 style={{ fontSize: '1.15rem', color: 'var(--text-dark)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Package size={18} /> Invoice Details
+            <h3 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Package size={18} className="text-[#0033B4]" /> Invoice Details
             </h3>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+            <div className="space-y-3 mb-6 pb-6 border-b border-slate-100">
               {order.items && order.items.map((item) => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.95rem' }}>
+                <div key={item.id} className="flex justify-between items-center text-xs sm:text-sm">
                   <div>
-                    <span style={{ fontWeight: 600, color: 'var(--text-dark)' }}>{item.name}</span>
-                    <span style={{ color: 'var(--text-light)', fontSize: '0.85rem', marginLeft: '0.5rem' }}>
-                      ({item.weight_or_volume})
-                    </span>
+                    <span className="font-bold text-slate-900">{item.name}</span>
+                    <span className="text-slate-400 text-xs ml-2">({item.weight_or_volume})</span>
                   </div>
-                  <div style={{ color: 'var(--text-light)' }}>Qty: {item.quantity}</div>
-                  <div style={{ fontWeight: 700 }}>₹{(parseFloat(item.price_per_unit) * item.quantity).toFixed(2)}</div>
+                  <div className="text-slate-500">Qty: {item.quantity}</div>
+                  <div className="font-bold text-slate-900">₹{(parseFloat(item.price_per_unit) * item.quantity).toFixed(2)}</div>
                 </div>
               ))}
             </div>
 
             {/* Price Calculations */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', fontSize: '0.95rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', gap: '4rem' }}>
-                <span style={{ color: 'var(--text-light)' }}>Subtotal:</span>
-                <span style={{ fontWeight: 600 }}>₹{parseFloat(order.total_amount).toFixed(2)}</span>
+            <div className="flex flex-col items-end space-y-2 text-sm pb-6 mb-6 border-b border-slate-100">
+              <div className="flex justify-between w-48 text-slate-600">
+                <span>Subtotal:</span>
+                <span className="font-bold text-slate-900">₹{parseFloat(order.total_amount).toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', gap: '4rem' }}>
-                <span style={{ color: 'var(--text-light)' }}>Shipping:</span>
-                <span style={{ color: '#2e7d32', fontWeight: 600 }}>FREE</span>
+              <div className="flex justify-between w-48 text-slate-600">
+                <span>Shipping:</span>
+                <span className="text-emerald-600 font-bold">FREE</span>
               </div>
-              <div style={{ display: 'flex', gap: '4rem', fontSize: '1.25rem', fontWeight: 800 }}>
-                <span style={{ color: 'var(--text-dark)' }}>Amount Paid:</span>
-                <span style={{ color: 'var(--primary-color)' }}>₹{parseFloat(order.total_amount).toFixed(2)}</span>
+              <div className="flex justify-between w-48 text-base sm:text-lg font-extrabold text-slate-900 pt-2 border-t border-slate-100">
+                <span>Amount Paid:</span>
+                <span className="text-[#0033B4]">₹{parseFloat(order.total_amount).toFixed(2)}</span>
               </div>
             </div>
 
             {/* 2. Customer Contact details */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem' }} className="success-delivery-row">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <h4 style={{ fontSize: '1rem', color: 'var(--text-dark)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <MapPin size={16} style={{ color: 'var(--primary-color)' }} /> Delivery Address
+                <h4 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-1.5">
+                  <MapPin size={16} className="text-[#0033B4]" /> Delivery Address
                 </h4>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', lineHeight: 1.5 }}>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   {order.shipping_address}
                 </p>
               </div>
 
               <div>
-                <h4 style={{ fontSize: '1rem', color: 'var(--text-dark)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <Phone size={16} style={{ color: 'var(--primary-color)' }} /> Contact Details
+                <h4 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-1.5">
+                  <Phone size={16} className="text-[#0033B4]" /> Contact Details
                 </h4>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>
-                  Name: <strong>{order.registered_name || order.guest_name || 'Guest'}</strong>
+                <p className="text-xs sm:text-sm text-slate-600">
+                  Name: <strong className="text-slate-800">{order.registered_name || order.guest_name || 'Guest'}</strong>
                 </p>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>
+                <p className="text-xs sm:text-sm text-slate-600 mt-1">
                   Phone: {order.contact_number}
                 </p>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>
+                <p className="text-xs sm:text-sm text-slate-600 mt-1">
                   Email: {order.registered_email || order.guest_email || 'N/A'}
                 </p>
               </div>
@@ -166,11 +151,11 @@ export default function OrderSuccess() {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/shop" className="btn btn-primary">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link to="/shop" className="btn btn-primary px-8 py-3 text-sm font-black">
             Order More Ghee <ArrowRight size={16} />
           </Link>
-          <Link to="/" className="btn btn-outline">
+          <Link to="/" className="btn btn-outline px-6 py-3 text-sm font-bold">
             Go to Homepage
           </Link>
         </div>

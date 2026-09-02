@@ -1,164 +1,126 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { 
-  ShoppingBag, Layers, Star, Mail, ExternalLink, LogOut, ShieldCheck
+  ShoppingBag, ExternalLink, LogOut, ShieldCheck, Menu, X 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const closeSidebar = () => setMobileSidebarOpen(false);
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC', color: '#0F172A' }}>
+    <div className="flex min-h-screen bg-slate-50 text-slate-900">
       
-      {/* 1. Clean Sidebar */}
-      <aside style={{
-        width: '240px',
-        backgroundColor: '#0F172A',
-        color: '#94A3B8',
-        display: 'flex',
-        flexDirection: 'column',
-        flexShrink: 0,
-        position: 'sticky',
-        top: 0,
-        height: '100vh',
-        zIndex: 100
-      }}>
+      {/* Mobile Sidebar Overlay */}
+      {mobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-slate-900/60 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
+      {/* 1. Sidebar */}
+      <aside className={`
+        fixed lg:sticky top-0 bottom-0 left-0 z-50 w-60 bg-slate-900 text-slate-400 flex flex-col flex-shrink-0 h-screen transition-transform duration-300 ease-in-out
+        ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
         {/* Brand */}
-        <div style={{
-          padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid #1E293B',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem'
-        }}>
-          <div style={{
-            backgroundColor: 'var(--secondary-color)',
-            color: 'var(--primary-color)',
-            width: '32px',
-            height: '32px',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 800
-          }}>
-            <ShieldCheck size={18} />
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#F5C518] text-[#0033B4] w-8 h-8 rounded-lg flex items-center justify-center font-extrabold shrink-0">
+              <ShieldCheck size={18} />
+            </div>
+            <div>
+              <div className="text-white font-extrabold text-sm leading-tight">Sai Krishna</div>
+              <div className="text-[#F5C518] text-[10px] font-bold tracking-wider uppercase">Admin Panel</div>
+            </div>
           </div>
-          <div>
-            <div style={{ color: '#FFF', fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.1 }}>Sai Krishna</div>
-            <div style={{ color: 'var(--secondary-color)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Admin Panel</div>
-          </div>
+          <button 
+            onClick={closeSidebar}
+            className="lg:hidden text-slate-400 hover:text-white p-1"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Navigation Menu */}
-        <div style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#475569', padding: '0.5rem 0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <div className="flex-1 p-3 flex flex-col gap-1 overflow-y-auto">
+          <div className="text-[10px] font-extrabold text-slate-500 px-3 py-2 uppercase tracking-wider">
             Management
           </div>
 
           <NavLink
             to="/admin"
             end
-            style={({ isActive }) => ({
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.65rem 0.85rem',
-              borderRadius: '6px',
-              color: isActive ? '#FFFFFF' : '#94A3B8',
-              backgroundColor: isActive ? '#1E293B' : 'transparent',
-              fontWeight: isActive ? 700 : 500,
-              textDecoration: 'none',
-              fontSize: '0.875rem'
-            })}
+            onClick={closeSidebar}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors font-medium ${
+                isActive ? 'text-white bg-slate-800 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`
+            }
           >
-            <ShoppingBag size={17} style={{ color: 'var(--secondary-color)' }} />
+            <ShoppingBag size={17} className="text-[#F5C518]" />
             <span>Dashboard</span>
           </NavLink>
 
           <Link
             to="/shop"
             target="_blank"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.65rem 0.85rem',
-              borderRadius: '6px',
-              color: '#94A3B8',
-              textDecoration: 'none',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              marginTop: '0.5rem'
-            }}
+            onClick={closeSidebar}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors font-medium mt-2"
           >
             <ExternalLink size={16} />
             <span>View Storefront</span>
           </Link>
         </div>
 
-        {/* User profile footer */}
-        <div style={{
-          padding: '1rem 1.25rem',
-          borderTop: '1px solid #1E293B',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <div>
-            <div style={{ color: '#FFF', fontSize: '0.85rem', fontWeight: 700 }}>{user?.name || 'Admin'}</div>
-            <div style={{ color: '#64748B', fontSize: '0.75rem' }}>{user?.email || 'admin@saikrishnaghee.com'}</div>
+        {/* User Profile Footer */}
+        <div className="p-4 border-t border-slate-800 flex items-center justify-between">
+          <div className="min-w-0 pr-2">
+            <div className="text-white text-xs font-bold truncate">{user?.name || 'Admin'}</div>
+            <div className="text-slate-500 text-[11px] truncate">{user?.email || 'admin@saikrishnaghee.com'}</div>
           </div>
           <button
             onClick={handleLogout}
-            style={{ background: 'none', border: 'none', color: '#F87171', cursor: 'pointer', padding: '0.35rem' }}
+            className="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-slate-800 transition-colors shrink-0"
             title="Log Out"
           >
             <LogOut size={16} />
           </button>
         </div>
-
       </aside>
 
       {/* 2. Main Content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div className="flex-1 flex flex-col min-w-0">
         
         {/* Top Header */}
-        <header style={{
-          height: '60px',
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E2E8F0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 2rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 90
-        }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-            Store Management
-          </h2>
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileSidebarOpen(true)}
+              className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+              aria-label="Open sidebar"
+            >
+              <Menu size={20} />
+            </button>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 m-0">
+              Store Management
+            </h2>
+          </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="flex items-center gap-4">
             <Link
               to="/shop"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                color: 'var(--primary-color)',
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                textDecoration: 'none'
-              }}
+              className="inline-flex items-center gap-1.5 text-[#0033B4] hover:text-[#002688] text-xs sm:text-sm font-bold transition-colors"
             >
               <ExternalLink size={14} /> Open Store
             </Link>
@@ -166,7 +128,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Workspace */}
-        <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           <Outlet />
         </main>
 

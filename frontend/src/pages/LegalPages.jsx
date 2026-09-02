@@ -5,26 +5,21 @@ import { API_BASE } from '../context/AuthContext';
 // --- ABOUT US PAGE COMPONENT ---
 export function About() {
   return (
-    <div className="section">
-      <div className="container" style={{ maxWidth: '800px' }}>
-        <h1 className="section-title">Our Heritage & Story</h1>
-        <div style={{ fontSize: '1.05rem', color: 'var(--text-light)', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginTop: '2rem' }}>
+    <div className="py-12 sm:py-16 bg-[#FAF9F6] min-h-[80vh]">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-8">
+          Our Heritage & Story
+        </h1>
+        <div className="text-slate-600 text-base leading-relaxed space-y-6">
           <p>
             For generations, our family has been committed to health, vitality, and purity. The brand <strong>Sai Krishna Ghee</strong> was born out of a simple desire: to restore the authentic flavor and immense health benefits of traditional dairy products to modern households.
           </p>
           <p>
             Unlike massive commercial manufacturers who rely on chemical processing and rapid heat cream separation, we adhere strictly to traditional methods. Our cows are fed organic fodder and handled with deep care at partner dairy farms.
           </p>
-          <div style={{
-            backgroundColor: 'var(--bg-cream)',
-            borderLeft: '4px solid var(--secondary-color)',
-            padding: '1.5rem',
-            borderRadius: '0 8px 8px 0',
-            color: 'var(--text-dark)',
-            margin: '1rem 0'
-          }}>
-            <h3 style={{ marginBottom: '0.5rem', fontFamily: 'var(--font-body)', fontWeight: 700 }}>The Danedar Guarantee</h3>
-            <p style={{ fontSize: '0.95rem' }}>
+          <div className="bg-[#FCFAF2] border-l-4 border-[#F5C518] p-6 rounded-r-xl text-slate-800 my-6 shadow-sm">
+            <h3 className="font-bold text-lg text-slate-900 mb-2 font-serif">The Danedar Guarantee</h3>
+            <p className="text-sm">
               We slowly simmer butter to ensure moisture is completely removed, resulting in a rich granular structure. This Danedar texture is a natural sign of purity, signifying ghee made with patience and love.
             </p>
           </div>
@@ -37,7 +32,7 @@ export function About() {
   );
 }
 
-// --- CONTACT US PAGE COMPONENT (Working Inquiry Form - FR-8.2) ---
+// --- CONTACT US PAGE COMPONENT ---
 export function Contact() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -78,46 +73,48 @@ export function Contact() {
   };
 
   return (
-    <div className="section">
-      <div className="container">
-        <h1 className="section-title">Contact Us</h1>
+    <div className="py-12 sm:py-16 bg-[#FAF9F6] min-h-[80vh]">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-10">
+          Contact Us
+        </h1>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '3rem', marginTop: '2.5rem' }} className="contact-layout">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Direct Details column */}
-          <div>
-            <h3 style={{ fontSize: '1.5rem', color: 'var(--primary-color)', marginBottom: '1.5rem' }}>Get in Touch</h3>
-            <p style={{ color: 'var(--text-light)', marginBottom: '2rem' }}>
+          <div className="lg:col-span-5">
+            <h3 className="text-xl font-bold font-serif text-slate-900 mb-3">Get in Touch</h3>
+            <p className="text-slate-500 text-sm mb-6 leading-relaxed">
               Have questions about bulk orders, corporate gifting, or franchise inquiries? Reach out to us directly through any of these channels:
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: 'var(--primary-color)', backgroundColor: 'var(--bg-cream)', padding: '0.75rem', borderRadius: '50%' }}>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="text-[#0033B4] bg-[#FCFAF2] p-3 rounded-full shrink-0 border border-amber-200">
                   <Phone size={20} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 600 }}>Phone Support</h4>
-                  <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginTop: '0.15rem' }}>+91 98765 43210</p>
+                  <h4 className="text-sm font-bold text-slate-900">Phone Support</h4>
+                  <p className="text-slate-500 text-xs mt-0.5">+91 98765 43210</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: 'var(--primary-color)', backgroundColor: 'var(--bg-cream)', padding: '0.75rem', borderRadius: '50%' }}>
+              <div className="flex items-start gap-3">
+                <div className="text-[#0033B4] bg-[#FCFAF2] p-3 rounded-full shrink-0 border border-amber-200">
                   <Mail size={20} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 600 }}>Email Address</h4>
-                  <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginTop: '0.15rem' }}>orders@saikrishnaghee.com</p>
+                  <h4 className="text-sm font-bold text-slate-900">Email Address</h4>
+                  <p className="text-slate-500 text-xs mt-0.5">orders@saikrishnaghee.com</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                <div style={{ color: 'var(--primary-color)', backgroundColor: 'var(--bg-cream)', padding: '0.75rem', borderRadius: '50%' }}>
+              <div className="flex items-start gap-3">
+                <div className="text-[#0033B4] bg-[#FCFAF2] p-3 rounded-full shrink-0 border border-amber-200">
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 600 }}>Corporate Office</h4>
-                  <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginTop: '0.15rem' }}>
+                  <h4 className="text-sm font-bold text-slate-900">Corporate Office</h4>
+                  <p className="text-slate-500 text-xs mt-0.5">
                     Sai Krishna Dairy Farms, Main Highway Sector, Guntur, AP, India
                   </p>
                 </div>
@@ -126,82 +123,74 @@ export function Contact() {
           </div>
 
           {/* Form column */}
-          <div style={{ backgroundColor: '#fff', border: '1px solid var(--border-color)', borderRadius: '16px', padding: '2rem', boxShadow: 'var(--shadow-sm)' }}>
-            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-dark)', marginBottom: '1.25rem' }}>Send Us an Inquiry</h3>
+          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+            <h3 className="text-lg font-bold font-serif text-slate-900 mb-4">Send Us an Inquiry</h3>
             
             {submitted ? (
-              <div style={{
-                backgroundColor: 'rgba(46, 125, 50, 0.05)',
-                border: '1px solid #2e7d32',
-                color: '#2e7d32',
-                padding: '1.5rem',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <CheckCircle size={36} style={{ margin: '0 auto 1rem auto' }} />
-                <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Message Sent Successfully!</h4>
-                <p style={{ fontSize: '0.9rem' }}>Thank you for writing. Our sales team will get back to you within 24 hours.</p>
-                <button onClick={() => setSubmitted(false)} className="btn btn-outline" style={{ marginTop: '1.5rem', padding: '0.4rem 1.25rem', fontSize: '0.85rem' }}>
+              <div className="bg-emerald-50 border border-emerald-500 text-emerald-800 p-6 rounded-xl text-center space-y-3">
+                <CheckCircle size={36} className="mx-auto text-emerald-600" />
+                <h4 className="text-base font-bold">Message Sent Successfully!</h4>
+                <p className="text-xs sm:text-sm">Thank you for writing. Our sales team will get back to you within 24 hours.</p>
+                <button onClick={() => setSubmitted(false)} className="btn btn-outline px-4 py-2 text-xs font-bold">
                   Send another inquiry
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmitInquiry}>
-                {error && <p style={{ color: '#ff3b30', fontSize: '0.85rem', marginBottom: '1rem', fontWeight: 600 }}>{error}</p>}
+              <form onSubmit={handleSubmitInquiry} className="space-y-4">
+                {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
                 
-                <div className="form-group">
-                  <label className="form-label">Full Name *</label>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
                   <input
                     type="text"
-                    className="form-control"
                     placeholder="Enter name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   />
                 </div>
 
-                <div className="grid-2">
-                  <div className="form-group">
-                    <label className="form-label">Email Address *</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
                     <input
                       type="email"
-                      className="form-control"
                       placeholder="Enter email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                     />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Mobile Number</label>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Mobile Number</label>
                     <input
                       type="tel"
-                      className="form-control"
                       placeholder="Enter number"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
+                      className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                     />
                   </div>
                 </div>
 
-                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                  <label className="form-label">Your Message *</label>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Your Message *</label>
                   <textarea
                     rows="4"
-                    className="form-control"
                     placeholder="Describe your inquiry details..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn btn-primary"
-                  style={{ width: '100%', padding: '0.65rem', borderRadius: '8px' }}
+                  className="btn btn-primary w-full py-3 text-sm font-bold"
                 >
                   {loading ? 'Submitting Form...' : 'Submit Inquiry'}
                 </button>
@@ -217,19 +206,21 @@ export function Contact() {
 // --- PRIVACY POLICY COMPONENT ---
 export function PrivacyPolicy() {
   return (
-    <div className="section">
-      <div className="container" style={{ maxWidth: '800px' }}>
-        <h1 className="section-title">Privacy Policy</h1>
-        <div style={{ color: 'var(--text-light)', display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '2rem', fontSize: '0.95rem' }}>
-          <p>Last updated: August 2026</p>
+    <div className="py-12 sm:py-16 bg-[#FAF9F6] min-h-[80vh]">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-8">
+          Privacy Policy
+        </h1>
+        <div className="text-slate-600 text-sm leading-relaxed space-y-4">
+          <p className="text-xs text-slate-400 font-medium">Last updated: August 2026</p>
           <p>
             At Sai Krishna Ghee, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by our e-commerce store and how we use it.
           </p>
-          <h3 style={{ color: 'var(--text-dark)', marginTop: '1rem' }}>Information We Collect</h3>
+          <h3 className="text-base font-bold text-slate-900 pt-2">Information We Collect</h3>
           <p>
             When you register for an Account or check out as a guest, we may ask for your contact information, including items such as name, company name, address, email address, and telephone number.
           </p>
-          <h3 style={{ color: 'var(--text-dark)', marginTop: '1rem' }}>How We Use Your Information</h3>
+          <h3 className="text-base font-bold text-slate-900 pt-2">How We Use Your Information</h3>
           <p>
             We use the information we collect in various ways, including to: provide, operate, and maintain our website; improve, personalize, and expand our store offerings; understand and analyze how you use our website; develop new products, services, and features; process your transactions; and send you emails related to order updates.
           </p>
@@ -242,15 +233,17 @@ export function PrivacyPolicy() {
 // --- TERMS & CONDITIONS COMPONENT ---
 export function TermsConditions() {
   return (
-    <div className="section">
-      <div className="container" style={{ maxWidth: '800px' }}>
-        <h1 className="section-title">Terms & Conditions</h1>
-        <div style={{ color: 'var(--text-light)', display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '2rem', fontSize: '0.95rem' }}>
+    <div className="py-12 sm:py-16 bg-[#FAF9F6] min-h-[80vh]">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-8">
+          Terms & Conditions
+        </h1>
+        <div className="text-slate-600 text-sm leading-relaxed space-y-4">
           <p>Welcome to Sai Krishna Ghee!</p>
           <p>
             These terms and conditions outline the rules and regulations for the use of Sai Krishna Ghee's Website. By accessing this website, we assume you accept these terms and conditions. Do not continue to use the site if you do not agree to take all of the terms and conditions stated on this page.
           </p>
-          <h3 style={{ color: 'var(--text-dark)', marginTop: '1rem' }}>E-Commerce Sales</h3>
+          <h3 className="text-base font-bold text-slate-900 pt-2">E-Commerce Sales</h3>
           <p>
             We reserve the right to cancel orders if item stocks are exhausted. Prices of ghee variants are subject to change without prior notice. Products once opened cannot be returned due to food safety and hygiene regulations.
           </p>
@@ -284,48 +277,31 @@ export function FAQ() {
   ];
 
   return (
-    <div className="section">
-      <div className="container" style={{ maxWidth: '750px' }}>
-        <h1 className="section-title">Frequently Asked Questions (FAQ)</h1>
+    <div className="py-12 sm:py-16 bg-[#FAF9F6] min-h-[80vh]">
+      <div className="container mx-auto px-4 max-w-2xl">
+        <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-8">
+          Frequently Asked Questions (FAQ)
+        </h1>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2.5rem' }}>
+        <div className="space-y-3">
           {faqsList.map((faq, idx) => {
             const isOpen = openIdx === idx;
             return (
               <div 
                 key={idx}
-                style={{
-                  backgroundColor: '#fff',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  boxShadow: 'var(--shadow-sm)'
-                }}
+                className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? -1 : idx)}
-                  style={{
-                    width: '100%',
-                    padding: '1.25rem',
-                    textAlign: 'left',
-                    background: 'none',
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '1rem',
-                    color: 'var(--text-dark)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
+                  className="w-full p-4 sm:p-5 text-left bg-none border-none font-bold text-sm sm:text-base text-slate-900 cursor-pointer flex justify-between items-center"
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <HelpCircle size={18} style={{ color: 'var(--primary-color)' }} /> {faq.q}
+                  <span className="flex items-center gap-2">
+                    <HelpCircle size={18} className="text-[#0033B4] shrink-0" /> {faq.q}
                   </span>
-                  <span>{isOpen ? '-' : '+'}</span>
+                  <span className="font-mono text-slate-400 font-bold ml-2">{isOpen ? '-' : '+'}</span>
                 </button>
                 {isOpen && (
-                  <div style={{ padding: '0 1.25rem 1.25rem 2.5rem', color: 'var(--text-light)', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                  <div className="px-5 pb-5 pt-0 pl-11 text-slate-600 text-xs sm:text-sm leading-relaxed">
                     {faq.a}
                   </div>
                 )}

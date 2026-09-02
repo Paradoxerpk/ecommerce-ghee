@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth, API_BASE } from '../context/AuthContext';
 import { CreditCard, Check, AlertTriangle, ShieldCheck, ShoppingCart } from 'lucide-react';
@@ -28,10 +28,10 @@ export default function Checkout() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="section" style={{ textAlign: 'center' }}>
-        <div className="container">
-          <h2>No items in cart to checkout</h2>
-          <button onClick={() => navigate('/shop')} className="btn btn-primary" style={{ marginTop: '1.5rem' }}>
+      <div className="py-16 text-center bg-[#FAF9F6] min-h-[60vh] flex items-center justify-center">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold font-serif text-slate-800 mb-4">No items in cart to checkout</h2>
+          <button onClick={() => navigate('/shop')} className="btn btn-primary px-6 py-2.5 text-sm">
             Back to Shop
           </button>
         </div>
@@ -96,11 +96,9 @@ export default function Checkout() {
       setCreatedOrder(orderData);
 
       if (paymentMethod === 'cod') {
-        // Cash on Delivery proceeds directly to success page
         clearCart();
         navigate(`/order-success/${orderData.id}`);
       } else {
-        // Open simulated Razorpay payment gateway
         setShowRazorpayModal(true);
       }
 
@@ -111,7 +109,6 @@ export default function Checkout() {
     }
   };
 
-  // Simulate payment processing (FR-5.2 / FR-5.3 integration)
   const handlePaymentSimulation = async (status) => {
     setLoading(true);
     try {
@@ -123,7 +120,7 @@ export default function Checkout() {
         body: JSON.stringify({
           order_id: createdOrder.id,
           payment_id: createdOrder.payment_id || `pay_sim_${Math.random().toString(36).substring(2, 9)}`,
-          status: status // 'success' or 'failed'
+          status: status
         })
       });
 
@@ -153,80 +150,71 @@ export default function Checkout() {
   const total = getOrderTotal();
 
   return (
-    <div className="section" style={{ minHeight: '80vh' }}>
-      <div className="container">
-        <h1 className="section-title">Checkout</h1>
+    <div className="py-10 bg-[#FAF9F6] min-h-screen">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <h1 className="text-3xl font-black font-serif text-slate-900 mb-8 text-center sm:text-left">
+          Checkout
+        </h1>
 
         {errorMessage && (
-          <div style={{
-            backgroundColor: 'rgba(255, 59, 48, 0.05)',
-            border: '1px solid #ff3b30',
-            color: '#ff3b30',
-            padding: '1rem',
-            borderRadius: '8px',
-            marginBottom: '2rem',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
+          <div className="bg-red-50 border border-red-400 text-red-600 p-4 rounded-xl mb-6 font-bold text-sm flex items-center gap-2">
             <AlertTriangle size={18} />
             <span>{errorMessage}</span>
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '3rem' }} className="checkout-layout">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* 1. Form Section */}
-          <form onSubmit={handlePlaceOrder}>
+          <form onSubmit={handlePlaceOrder} className="lg:col-span-8 space-y-6">
             {/* Customer Details Block */}
-            <div style={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '2rem', marginBottom: '2rem', boxShadow: 'var(--shadow-sm)' }}>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+              <h3 className="text-lg font-bold font-serif text-[#0033B4] mb-4 pb-3 border-b border-slate-100">
                 Contact Information
               </h3>
 
               {isAuthenticated ? (
                 <div>
-                  <p style={{ fontSize: '0.95rem', color: 'var(--text-dark)' }}>Logged In as: <strong>{user.name}</strong> ({user.email})</p>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>Registered members get complete order tracking history.</p>
+                  <p className="text-sm text-slate-800">Logged In as: <strong className="text-slate-900">{user.name}</strong> ({user.email})</p>
+                  <p className="text-xs text-slate-400 mt-1">Registered members get complete order tracking history.</p>
                 </div>
               ) : (
-                <div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '1rem' }}>
-                    Checking out as <strong>Guest</strong>. Feel free to fill details below, or <Link to="/login" style={{ color: 'var(--primary-color)', fontWeight: 600, textDecoration: 'underline' }}>Login here</Link> first.
+                <div className="space-y-4">
+                  <p className="text-xs text-slate-500">
+                    Checking out as <strong>Guest</strong>. Feel free to fill details below, or <Link to="/login" className="text-[#0033B4] font-bold underline">Login here</Link> first.
                   </p>
-                  <div className="grid-2">
-                    <div className="form-group">
-                      <label className="form-label">Full Name *</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
                       <input
                         type="text"
-                        className="form-control"
                         placeholder="John Doe"
                         value={guestName}
                         onChange={(e) => setGuestName(e.target.value)}
                         required
+                        className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                       />
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">Email Address *</label>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
                       <input
                         type="email"
-                        className="form-control"
                         placeholder="john@example.com"
                         value={guestEmail}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         required
+                        className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                       />
                     </div>
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Contact Mobile (For updates) *</label>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Contact Mobile (For updates) *</label>
                     <input
                       type="tel"
-                      className="form-control"
                       placeholder="e.g. 9876543210"
                       value={guestPhone}
                       onChange={(e) => setGuestPhone(e.target.value)}
+                      className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                     />
                   </div>
                 </div>
@@ -234,41 +222,41 @@ export default function Checkout() {
             </div>
 
             {/* Shipping & Delivery Options Block */}
-            <div style={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '2rem', marginBottom: '2rem', boxShadow: 'var(--shadow-sm)' }}>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
+              <h3 className="text-lg font-bold font-serif text-[#0033B4] pb-3 border-b border-slate-100 m-0">
                 Shipping Address & Delivery
               </h3>
 
-              <div className="form-group">
-                <label className="form-label">Complete Shipping Address *</label>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Complete Shipping Address *</label>
                 <textarea
-                  rows="4"
-                  className="form-control"
+                  rows="3"
                   placeholder="House/Plot No, Street, Landmark, City, State, Pincode"
                   value={shippingAddress}
                   onChange={(e) => setShippingAddress(e.target.value)}
                   required
+                  className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                 />
               </div>
 
-              <div className="grid-2">
-                <div className="form-group">
-                  <label className="form-label">Contact Number (For Courier) *</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Contact Number (For Courier) *</label>
                   <input
                     type="tel"
-                    className="form-control"
                     placeholder="Courier contact number"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
                     required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Delivery Speed Preference</label>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Delivery Speed Preference</label>
                   <select
-                    className="form-control"
                     value={deliveryPreference}
                     onChange={(e) => setDeliveryPreference(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:border-[#0033B4]"
                   >
                     <option value="standard">Standard Delivery (3-5 Business Days) - FREE</option>
                     <option value="morning">Deliver only in morning hours</option>
@@ -280,57 +268,43 @@ export default function Checkout() {
             </div>
 
             {/* Payment Method Block */}
-            <div style={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '2rem', boxShadow: 'var(--shadow-sm)' }}>
-              <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-color)', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+              <h3 className="text-lg font-bold font-serif text-[#0033B4] mb-4 pb-3 border-b border-slate-100">
                 Payment Selection
               </h3>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  padding: '1.25rem',
-                  border: `2px solid ${paymentMethod === 'upi' ? 'var(--primary-color)' : 'var(--border-color)'}`,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  backgroundColor: paymentMethod === 'upi' ? 'rgba(0, 51, 180, 0.02)' : '#fff',
-                  transition: 'all 0.2s'
-                }}>
+              <div className="space-y-3">
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  paymentMethod === 'upi' ? 'border-[#0033B4] bg-[#0033B4]/5' : 'border-slate-200 bg-white'
+                }`}>
                   <input
                     type="radio"
                     name="payment"
                     value="upi"
                     checked={paymentMethod === 'upi'}
                     onChange={() => setPaymentMethod('upi')}
+                    className="accent-[#0033B4]"
                   />
                   <div>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: 'var(--text-dark)' }}>UPI Payment (Razorpay Sandbox)</strong>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Pay instantly via GooglePay, PhonePe, Paytm, or UPI ID.</span>
+                    <strong className="block text-sm font-bold text-slate-900">UPI Payment (Razorpay Sandbox)</strong>
+                    <span className="text-xs text-slate-500">Pay instantly via GooglePay, PhonePe, Paytm, or UPI ID.</span>
                   </div>
                 </label>
 
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  padding: '1.25rem',
-                  border: `2px solid ${paymentMethod === 'cod' ? 'var(--primary-color)' : 'var(--border-color)'}`,
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  backgroundColor: paymentMethod === 'cod' ? 'rgba(0, 51, 180, 0.02)' : '#fff',
-                  transition: 'all 0.2s'
-                }}>
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  paymentMethod === 'cod' ? 'border-[#0033B4] bg-[#0033B4]/5' : 'border-slate-200 bg-white'
+                }`}>
                   <input
                     type="radio"
                     name="payment"
                     value="cod"
                     checked={paymentMethod === 'cod'}
                     onChange={() => setPaymentMethod('cod')}
+                    className="accent-[#0033B4]"
                   />
                   <div>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: 'var(--text-dark)' }}>Cash on Delivery (COD)</strong>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Pay with cash when order is delivered at your doorstep.</span>
+                    <strong className="block text-sm font-bold text-slate-900">Cash on Delivery (COD)</strong>
+                    <span className="text-xs text-slate-500">Pay with cash when order is delivered at your doorstep.</span>
                   </div>
                 </label>
               </div>
@@ -338,62 +312,45 @@ export default function Checkout() {
           </form>
 
           {/* 2. Right Side: Order Summary Checklist */}
-          <div>
-            <div style={{
-              backgroundColor: '#fff',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              padding: '1.75rem',
-              boxShadow: 'var(--shadow-sm)',
-              position: 'sticky',
-              top: '100px'
-            }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-dark)', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+          <div className="lg:col-span-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm sticky top-24">
+              <h3 className="text-lg font-bold font-serif text-slate-900 mb-4 pb-3 border-b border-slate-100">
                 Review Items ({cartItems.length})
               </h3>
 
               {/* Items Summary list */}
-              <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', paddingRight: '0.5rem' }}>
+              <div className="max-h-48 overflow-y-auto space-y-3 mb-6 pr-1">
                 {cartItems.map(item => (
-                  <div key={item.variant_id} style={{ display: 'flex', justify: 'space-between', alignItems: 'center', fontSize: '0.9rem' }}>
-                    <span style={{ color: 'var(--text-dark)', display: 'block', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.name} <span style={{ color: 'var(--text-light)', fontSize: '0.8rem' }}>({item.weight_or_volume})</span>
+                  <div key={item.variant_id} className="flex justify-between items-center text-xs">
+                    <span className="text-slate-800 font-medium truncate max-w-[170px]">
+                      {item.name} <span className="text-slate-400">({item.weight_or_volume})</span>
                     </span>
-                    <span style={{ color: 'var(--text-light)' }}>Qty: {item.quantity}</span>
-                    <span style={{ fontWeight: 600 }}>₹{(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="text-slate-400">Qty: {item.quantity}</span>
+                    <span className="font-bold text-slate-900">₹{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
 
               {/* Subtotal, discount, total */}
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.95rem' }}>
-                <div style={{ display: 'flex', justify: 'space-between' }}>
-                  <span style={{ color: 'var(--text-light)' }}>Subtotal</span>
+              <div className="border-t border-slate-100 pt-4 space-y-2 text-sm">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal</span>
                   <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                 {discountAmount > 0 && (
-                  <div style={{ display: 'flex', justify: 'space-between', color: '#2e7d32' }}>
+                  <div className="flex justify-between text-emerald-600 font-medium">
                     <span>Discount</span>
                     <span>-₹{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', justify: 'space-between' }}>
-                  <span style={{ color: 'var(--text-light)' }}>Shipping</span>
-                  <span style={{ color: '#2e7d32', fontWeight: 600 }}>FREE</span>
+                <div className="flex justify-between text-slate-600">
+                  <span>Shipping</span>
+                  <span className="text-emerald-600 font-bold">FREE</span>
                 </div>
 
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginTop: '1rem',
-                  borderTop: '1px solid var(--border-color)',
-                  paddingTop: '1rem',
-                  fontSize: '1.05rem',
-                  fontWeight: 700,
-                  color: 'var(--text-dark)'
-                }}>
+                <div className="flex justify-between items-center pt-3 border-t border-slate-100 font-bold text-slate-900">
                   <span>Order Total</span>
-                  <span style={{ fontSize: '1.4rem', color: 'var(--primary-color)', fontWeight: 800 }}>
+                  <span className="text-2xl font-black text-[#0033B4]">
                     ₹{total.toFixed(2)}
                   </span>
                 </div>
@@ -403,14 +360,13 @@ export default function Checkout() {
               <button
                 onClick={handlePlaceOrder}
                 disabled={loading}
-                className="btn btn-secondary"
-                style={{ width: '100%', padding: '0.85rem', borderRadius: '30px', marginTop: '2rem', fontSize: '1.05rem' }}
+                className="btn btn-secondary w-full py-3 text-base font-black shadow-lg mt-6"
               >
                 {loading ? 'Processing Checkout...' : paymentMethod === 'upi' ? 'Pay Now via UPI' : 'Confirm Cash Order'}
               </button>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', marginTop: '1.25rem', fontSize: '0.8rem', color: 'var(--text-light)', textAlign: 'center' }}>
-                <ShieldCheck size={16} style={{ color: '#2e7d32' }} />
+              <div className="flex items-center gap-1.5 justify-center mt-4 text-xs text-slate-400 text-center">
+                <ShieldCheck size={16} className="text-emerald-600" />
                 <span>Secure SSL Checkout | 100% Secure Payments</span>
               </div>
             </div>
@@ -421,73 +377,35 @@ export default function Checkout() {
 
       {/* 3. Simulated Razorpay UPI Payment Gateway Modal */}
       {showRazorpayModal && createdOrder && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(18, 31, 62, 0.6)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem'
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            borderRadius: '16px',
-            boxShadow: 'var(--shadow-lg)',
-            width: '100%',
-            maxWidth: '420px',
-            overflow: 'hidden',
-            border: '1px solid var(--border-color)'
-          }}>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
             {/* Header */}
-            <div style={{
-              backgroundColor: '#0a2540',
-              color: '#fff',
-              padding: '1.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
+            <div className="bg-slate-900 text-white p-6 flex items-center justify-between">
               <div>
-                <span style={{ fontSize: '0.7rem', color: '#00d4b2', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.05em' }}>Razorpay Secure</span>
-                <h4 style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: 0 }}>UPI Payment Interface</h4>
+                <span className="text-[10px] text-teal-400 uppercase font-extrabold tracking-widest">Razorpay Secure</span>
+                <h4 className="text-base font-bold m-0">UPI Payment Interface</h4>
               </div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary-color)' }}>
+              <span className="text-xl font-extrabold text-[#F5C518]">
                 ₹{parseFloat(createdOrder.total_amount).toFixed(2)}
               </span>
             </div>
 
             {/* Content */}
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
-              <div style={{ width: '50px', height: '50px', backgroundColor: 'rgba(0, 51, 180, 0.05)', borderRadius: '50%', color: 'var(--primary-color)', display: 'inline-flex', alignItems: 'center', justifyCenter: 'center', marginBottom: '1.5rem', display: 'inline-flex', justifyContent: 'center' }}>
-                <CreditCard size={28} style={{ alignSelf: 'center' }} />
+            <div className="p-6 text-center">
+              <div className="w-12 h-12 rounded-full bg-[#0033B4]/10 text-[#0033B4] inline-flex items-center justify-center mb-4">
+                <CreditCard size={24} />
               </div>
               
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.75rem', fontWeight: 700 }}>Simulate UPI Transaction</h3>
-              <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-                You are currently in **Sandbox Demonstration Mode**. Since keys are not active, you can test successful or failed transactions instantly.
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Simulate UPI Transaction</h3>
+              <p className="text-slate-500 text-xs sm:text-sm mb-6 leading-relaxed">
+                You are currently in **Sandbox Demonstration Mode**. Since real keys are not active, you can test successful or failed transactions instantly.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div className="space-y-3">
                 <button
                   type="button"
                   onClick={() => handlePaymentSimulation('success')}
-                  className="btn btn-primary"
-                  style={{
-                    backgroundColor: '#2e7d32',
-                    borderColor: '#2e7d32',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-colors"
                 >
                   <Check size={18} /> Simulate Successful Payment
                 </button>
@@ -495,13 +413,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => handlePaymentSimulation('failed')}
-                  className="btn btn-outline"
-                  style={{
-                    color: '#ff3b30',
-                    borderColor: '#ff3b30',
-                    padding: '0.75rem',
-                    borderRadius: '8px'
-                  }}
+                  className="w-full bg-white border border-red-500 text-red-500 hover:bg-red-50 py-3 px-4 rounded-xl font-bold text-sm transition-colors"
                 >
                   Simulate Failed Transaction
                 </button>
@@ -509,7 +421,7 @@ export default function Checkout() {
                 <button
                   type="button"
                   onClick={() => setShowRazorpayModal(false)}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-light)', fontSize: '0.85rem', cursor: 'pointer', marginTop: '0.5rem', textDecoration: 'underline' }}
+                  className="text-xs text-slate-400 hover:text-slate-600 underline mt-2 block mx-auto"
                 >
                   Cancel and go back
                 </button>
@@ -517,7 +429,7 @@ export default function Checkout() {
             </div>
 
             {/* Footer */}
-            <div style={{ backgroundColor: '#faf9f6', padding: '1rem', fontSize: '0.75rem', color: 'var(--text-light)', textAlign: 'center', borderTop: '1px solid var(--border-color)' }}>
+            <div className="bg-slate-50 p-3 text-[10px] text-slate-400 text-center border-t border-slate-100">
               Order Reference ID: {createdOrder.id?.substring(0, 18)}...
             </div>
           </div>
