@@ -87,6 +87,7 @@ export default function Shop() {
     setSearchParams(newParams);
   };
 
+
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [categories, setCategories] = useState([
     { name: 'Cow Ghee', slug: 'cow-ghee' },

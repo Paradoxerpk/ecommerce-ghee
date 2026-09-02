@@ -5,7 +5,6 @@ const AuthContext = createContext();
 // API URL configuration: Uses environment variable if set, otherwise defaults to relative /api (uses Vite dev proxy locally & same-origin in production)
 export const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
-
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(null);
