@@ -87,7 +87,7 @@ export const WishlistProvider = ({ children }) => {
     setWishlistItems(updatedWishlist);
 
     try {
-      await fetch(`${API_BASE}/wishlist/toggle`, {
+      await fetch(`${API_BASE}/wishlist/updateWishlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

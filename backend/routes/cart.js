@@ -27,10 +27,10 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// @route   POST /api/cart/sync
+// @route   POST /api/cart/updateCart
 // @desc    Sync local cart with database (overwrites/merges)
 // @access  Private
-router.post('/sync', authMiddleware, async (req, res) => {
+router.post('/updateCart', authMiddleware, async (req, res) => {
   const { cartItems } = req.body; // Expecting array of { product_id, variant_id, quantity }
 
   if (!Array.isArray(cartItems)) {

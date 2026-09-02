@@ -102,10 +102,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// @route   GET /api/auth/me
+// @route   GET /api/auth/userProfile
 // @desc    Get current user profile from token
 // @access  Private
-router.get('/me', authMiddleware, async (req, res) => {
+router.get('/userProfile', authMiddleware, async (req, res) => {
   try {
     const userResult = await db.query(
       'SELECT id, name, email, phone, role, created_at FROM users WHERE id = $1',
@@ -123,10 +123,10 @@ router.get('/me', authMiddleware, async (req, res) => {
   }
 });
 
-// @route   PUT /api/auth/profile
+// @route   PUT /api/auth/updateProfile
 // @desc    Update user profile details (name, phone, password)
 // @access  Private
-router.put('/profile', authMiddleware, async (req, res) => {
+router.put('/updateProfile', authMiddleware, async (req, res) => {
   const { name, phone, password } = req.body;
 
   try {

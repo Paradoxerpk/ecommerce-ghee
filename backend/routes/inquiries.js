@@ -3,10 +3,10 @@ const router = express.Router();
 const db = require('../db');
 const adminAuth = require('../middleware/admin');
 
-// @route   POST /api/inquiries
+// @route   POST /api/inquiries/sendInquiry
 // @desc    Submit a new contact/inquiry form entry
 // @access  Public
-router.post('/', async (req, res) => {
+router.post('/sendInquiry', async (req, res) => {
   const { name, email, phone, message } = req.body;
 
   if (!name || !email || !message) {
@@ -39,10 +39,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// @route   GET /api/inquiries/admin/all
+// @route   GET /api/inquiries/admin/allInquiries
 // @desc    Fetch all inquiries for admin dashboard
 // @access  Private (Admin/Staff)
-router.get('/admin/all', adminAuth, async (req, res) => {
+router.get('/admin/allInquiries', adminAuth, async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM inquiries ORDER BY created_at DESC');
     res.json(result.rows);
@@ -52,10 +52,10 @@ router.get('/admin/all', adminAuth, async (req, res) => {
   }
 });
 
-// @route   PUT /api/inquiries/admin/:id/status
+// @route   PUT /api/inquiries/admin/:id/updateInquiryStatus
 // @desc    Update inquiry status (unread / read)
 // @access  Private (Admin/Staff)
-router.put('/admin/:id/status', adminAuth, async (req, res) => {
+router.put('/admin/:id/updateInquiryStatus', adminAuth, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {

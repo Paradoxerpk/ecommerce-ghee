@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useAuth, API_BASE } from './AuthContext';
 import { useModal } from './ModalContext';
 
@@ -11,6 +11,15 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
+
+  const debounceTimer = useRef(null);
+
+  // Clear debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, []);
 
   // Synchronize cart with authentication status & user isolation
   useEffect(() => {
@@ -59,28 +68,36 @@ export const CartProvider = ({ children }) => {
     fetchServerCart();
   }, [isAuthenticated, token]);
 
-  const persistCart = async (newCart) => {
+  const persistCart = (newCart) => {
+    // 1. Optimistic UI update
     setCartItems(newCart);
 
+    // 2. Debounced Database Sync
     if (isAuthenticated && token) {
-      try {
-        await fetch(`${API_BASE}/cart/sync`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            cartItems: newCart.map(item => ({
-              product_id: item.product_id,
-              variant_id: item.variant_id,
-              quantity: item.quantity
-            }))
-          })
-        });
-      } catch (err) {
-        console.error('Error syncing cart change to database:', err);
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
       }
+
+      debounceTimer.current = setTimeout(async () => {
+        try {
+          await fetch(`${API_BASE}/cart/updateCart`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              cartItems: newCart.map(item => ({
+                product_id: item.product_id,
+                variant_id: item.variant_id,
+                quantity: item.quantity
+              }))
+            })
+          });
+        } catch (err) {
+          console.error('Cart sync error:', err);
+        }
+      }, 300);
     }
   };
 

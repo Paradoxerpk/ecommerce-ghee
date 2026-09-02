@@ -56,13 +56,13 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       // Fetch Orders Queue
-      const ordersRes = await fetch(`${API_BASE}/orders/admin/queue?status=${statusFilter}`, {
+      const ordersRes = await fetch(`${API_BASE}/orders/admin/ordersQueue?status=${statusFilter}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (ordersRes.ok) setOrders(await ordersRes.json());
 
       // Fetch Products & Categories
-      const prodRes = await fetch(`${API_BASE}/products/admin/all`, {
+      const prodRes = await fetch(`${API_BASE}/products/admin/allProducts`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (prodRes.ok) setProducts(await prodRes.json());
@@ -71,13 +71,13 @@ export default function AdminDashboard() {
       if (catRes.ok) setCategories(await catRes.json());
 
       // Fetch Reviews
-      const revRes = await fetch(`${API_BASE}/reviews/admin/all`, {
+      const revRes = await fetch(`${API_BASE}/reviews/admin/allReviews`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (revRes.ok) setReviews(await revRes.json());
 
       // Fetch Inquiries
-      const inqRes = await fetch(`${API_BASE}/inquiries/admin/all`, {
+      const inqRes = await fetch(`${API_BASE}/inquiries/admin/allInquiries`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (inqRes.ok) setInquiries(await inqRes.json());
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
     setUpdatingOrderId(orderId);
     try {
-      const res = await fetch(`${API_BASE}/orders/admin/${orderId}/status`, {
+      const res = await fetch(`${API_BASE}/orders/admin/${orderId}/updateOrderStatus`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -127,8 +127,8 @@ export default function AdminDashboard() {
   const handleSaveProduct = async (payload, editProductId) => {
     const isEdit = !!editProductId;
     const url = isEdit
-      ? `${API_BASE}/products/admin/${editProductId}`
-      : `${API_BASE}/products/admin`;
+      ? `${API_BASE}/products/admin/updateProduct/${editProductId}`
+      : `${API_BASE}/products/admin/addProduct`;
     const method = isEdit ? 'PUT' : 'POST';
 
     const res = await fetch(url, {
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
 
   const handleToggleProductActive = async (productId, currentActive) => {
     try {
-      const res = await fetch(`${API_BASE}/products/admin/${productId}`, {
+      const res = await fetch(`${API_BASE}/products/admin/updateProduct/${productId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
 
   const handleQuickUpdateStock = async (variantId, newStock, currentPrice, currentActive) => {
     try {
-      const res = await fetch(`${API_BASE}/products/admin/variants/${variantId}`, {
+      const res = await fetch(`${API_BASE}/products/admin/updateVariant/${variantId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
 
   const handleDeleteProductConfirm = async (productId) => {
     try {
-      const res = await fetch(`${API_BASE}/products/admin/${productId}`, {
+      const res = await fetch(`${API_BASE}/products/admin/deleteProduct/${productId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
   // --- REVIEW HANDLERS ---
   const handleUpdateReviewStatus = async (reviewId, status) => {
     try {
-      const res = await fetch(`${API_BASE}/reviews/admin/${reviewId}/status`, {
+      const res = await fetch(`${API_BASE}/reviews/admin/${reviewId}/updateReviewStatus`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -235,7 +235,7 @@ export default function AdminDashboard() {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      const res = await fetch(`${API_BASE}/reviews/admin/${reviewId}`, {
+      const res = await fetch(`${API_BASE}/reviews/admin/deleteReview/${reviewId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

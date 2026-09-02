@@ -80,7 +80,7 @@ export default function Checkout() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const res = await fetch(`${API_BASE}/orders/create`, {
+      const res = await fetch(`${API_BASE}/orders/createOrder`, {
         method: 'POST',
         headers,
         body: JSON.stringify(orderPayload)
@@ -112,7 +112,7 @@ export default function Checkout() {
   const handlePaymentSimulation = async (status) => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/orders/verify`, {
+      const res = await fetch(`${API_BASE}/orders/verifyPayment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ export default function Checkout() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* 1. Form Section */}
           <form onSubmit={handlePlaceOrder} className="lg:col-span-8 space-y-6">
             {/* Customer Details Block */}
@@ -274,9 +274,8 @@ export default function Checkout() {
               </h3>
 
               <div className="space-y-3">
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  paymentMethod === 'upi' ? 'border-[#0033B4] bg-[#0033B4]/5' : 'border-slate-200 bg-white'
-                }`}>
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'upi' ? 'border-[#0033B4] bg-[#0033B4]/5' : 'border-slate-200 bg-white'
+                  }`}>
                   <input
                     type="radio"
                     name="payment"
@@ -291,9 +290,8 @@ export default function Checkout() {
                   </div>
                 </label>
 
-                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                  paymentMethod === 'cod' ? 'border-[#0033B4] bg-[#0033B4]/5' : 'border-slate-200 bg-white'
-                }`}>
+                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-[#0033B4] bg-[#0033B4]/5' : 'border-slate-200 bg-white'
+                  }`}>
                   <input
                     type="radio"
                     name="payment"
@@ -395,7 +393,7 @@ export default function Checkout() {
               <div className="w-12 h-12 rounded-full bg-[#0033B4]/10 text-[#0033B4] inline-flex items-center justify-center mb-4">
                 <CreditCard size={24} />
               </div>
-              
+
               <h3 className="text-lg font-bold text-slate-900 mb-2">Simulate UPI Transaction</h3>
               <p className="text-slate-500 text-xs sm:text-sm mb-6 leading-relaxed">
                 You are currently in **Sandbox Demonstration Mode**. Since real keys are not active, you can test successful or failed transactions instantly.

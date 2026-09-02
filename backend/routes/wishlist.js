@@ -41,10 +41,10 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// @route   POST /api/wishlist/toggle
+// @route   POST /api/wishlist/updateWishlist
 // @desc    Add or remove a product from database wishlist
 // @access  Private
-router.post('/toggle', authMiddleware, async (req, res) => {
+router.post('/updateWishlist', authMiddleware, async (req, res) => {
   const { product_id } = req.body;
 
   if (!product_id) {
@@ -67,30 +67,6 @@ router.post('/toggle', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Toggle wishlist error:', err.message);
     res.status(500).json({ message: 'Server error updating wishlist' });
-  }
-});
-
-// @route   POST /api/wishlist/sync
-// @desc    Merge guest local wishlist items into user DB wishlist on login
-// @access  Private
-router.post('/sync', authMiddleware, async (req, res) => {
-  const { productIds } = req.body; // Expecting array of product IDs
-
-  if (!Array.isArray(productIds) || productIds.length === 0) {
-    return res.json({ success: true, message: 'No items to sync' });
-  }
-
-  try {
-    for (const pid of productIds) {
-      await db.query(
-        'INSERT INTO wishlist (user_id, product_id) VALUES ($1, $2) ON CONFLICT (user_id, product_id) DO NOTHING',
-        [req.user.id, pid]
-      );
-    }
-    res.json({ success: true, message: 'Wishlist synced successfully' });
-  } catch (err) {
-    console.error('Sync wishlist error:', err.message);
-    res.status(500).json({ message: 'Server error syncing wishlist' });
   }
 });
 

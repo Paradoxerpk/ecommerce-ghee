@@ -23,7 +23,7 @@ export default function OrdersHistory() {
 
     const fetchOrderHistory = async () => {
       try {
-        const res = await fetch(`${API_BASE}/orders/history`, {
+        const res = await fetch(`${API_BASE}/orders/orderHistory`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -132,8 +132,8 @@ export default function OrdersHistory() {
         {orders.length > 0 ? (
           <div className="space-y-6">
             {orders.map((order) => (
-              <div 
-                key={order.id} 
+              <div
+                key={order.id}
                 className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
               >
                 {/* Header card info */}
@@ -154,13 +154,12 @@ export default function OrdersHistory() {
                   </div>
 
                   <div>
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${
-                      order.status === 'paid' || order.status === 'delivered' 
-                        ? 'bg-emerald-100 text-emerald-800' 
-                        : order.status === 'cancelled' 
-                        ? 'bg-red-100 text-red-800' 
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide ${order.status === 'paid' || order.status === 'delivered'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : order.status === 'cancelled'
+                        ? 'bg-red-100 text-red-800'
                         : 'bg-amber-100 text-amber-800'
-                    }`}>
+                      }`}>
                       {order.status}
                     </span>
                   </div>

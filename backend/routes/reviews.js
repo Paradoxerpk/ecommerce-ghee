@@ -6,10 +6,10 @@ const adminAuth = require('../middleware/admin');
 
 const { optionalAuth } = require('../middleware/auth');
 
-// @route   POST /api/reviews/product/:productId
+// @route   POST /api/reviews/addReview/:productId
 // @desc    Submit a review for a product (Supports Authenticated & Guest Users)
 // @access  Public
-router.post('/product/:productId', optionalAuth, async (req, res) => {
+router.post('/addReview/:productId', optionalAuth, async (req, res) => {
   const { productId } = req.params;
   const { rating, comment, reviewer_name } = req.body;
 
@@ -19,7 +19,7 @@ router.post('/product/:productId', optionalAuth, async (req, res) => {
 
   try {
     let userId = req.user ? req.user.id : null;
-    
+
     // If guest and no user_id, pick default admin user as placeholder if foreign key demands it
     if (!userId) {
       const uRes = await db.query('SELECT id FROM users LIMIT 1');
@@ -45,10 +45,10 @@ router.post('/product/:productId', optionalAuth, async (req, res) => {
   }
 });
 
-// @route   GET /api/reviews/admin/all
+// @route   GET /api/reviews/admin/allReviews
 // @desc    Get all reviews for admin moderation
 // @access  Private (Admin/Staff)
-router.get('/admin/all', adminAuth, async (req, res) => {
+router.get('/admin/allReviews', adminAuth, async (req, res) => {
   try {
     const query = `
       SELECT r.id, r.rating, r.comment, r.status, r.created_at,
@@ -68,10 +68,10 @@ router.get('/admin/all', adminAuth, async (req, res) => {
   }
 });
 
-// @route   PUT /api/reviews/admin/:id/status
+// @route   PUT /api/reviews/admin/:id/updateReviewStatus
 // @desc    Update review status (approved / hidden / pending)
 // @access  Private (Admin/Staff)
-router.put('/admin/:id/status', adminAuth, async (req, res) => {
+router.put('/admin/:id/updateReviewStatus', adminAuth, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -96,10 +96,10 @@ router.put('/admin/:id/status', adminAuth, async (req, res) => {
   }
 });
 
-// @route   DELETE /api/reviews/admin/:id
+// @route   DELETE /api/reviews/admin/deleteReview/:id
 // @desc    Delete a review
 // @access  Private (Admin/Staff)
-router.delete('/admin/:id', adminAuth, async (req, res) => {
+router.delete('/admin/deleteReview/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   try {
     await db.query('DELETE FROM reviews WHERE id = $1', [id]);

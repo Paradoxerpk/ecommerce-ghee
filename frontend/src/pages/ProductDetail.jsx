@@ -71,7 +71,7 @@ export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { token, user } = useAuth();
-  
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -182,7 +182,7 @@ export default function ProductDetail() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const res = await fetch(`${API_BASE}/reviews/product/${product.id}`, {
+      const res = await fetch(`${API_BASE}/reviews/addReview/${product.id}`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -239,7 +239,7 @@ export default function ProductDetail() {
   return (
     <div className="py-8 sm:py-12 bg-[#FAF9F6]">
       <div className="container mx-auto px-4 max-w-7xl pb-16 md:pb-0">
-        
+
         {/* Back Link */}
         <Link to="/shop" className="inline-flex items-center gap-1.5 text-slate-500 hover:text-[#0033B4] font-semibold text-sm mb-6 transition-colors">
           <ArrowLeft size={16} /> Back to Catalog
@@ -247,7 +247,7 @@ export default function ProductDetail() {
 
         {/* 1. Product Details Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
+
           {/* Gallery Column */}
           <div className="lg:col-span-6">
             <div className="w-full h-80 sm:h-96 lg:h-[420px] rounded-2xl overflow-hidden bg-[#FCFAF2] border border-slate-200 mb-4 flex items-center justify-center p-6 shadow-sm">
@@ -266,9 +266,8 @@ export default function ProductDetail() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(img)}
-                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden cursor-pointer border p-1 bg-[#FCFAF2] shrink-0 transition-all ${
-                      selectedImage === img ? 'border-2 border-[#0033B4]' : 'border-slate-200'
-                    }`}
+                    className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden cursor-pointer border p-1 bg-[#FCFAF2] shrink-0 transition-all ${selectedImage === img ? 'border-2 border-[#0033B4]' : 'border-slate-200'
+                      }`}
                   >
                     <img src={img} alt="" className="w-full h-full object-contain" />
                   </button>
@@ -316,13 +315,12 @@ export default function ProductDetail() {
                         key={v.id}
                         onClick={() => setSelectedVariant(v)}
                         disabled={vDisabled}
-                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-[#0033B4]/10 border-[#0033B4] text-[#0033B4]'
-                            : vDisabled
+                        className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-all cursor-pointer ${isSelected
+                          ? 'bg-[#0033B4]/10 border-[#0033B4] text-[#0033B4]'
+                          : vDisabled
                             ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed line-through'
                             : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
-                        }`}
+                          }`}
                       >
                         {v.weight_or_volume} — ₹{parseFloat(v.price).toFixed(2)}
                       </button>
@@ -390,9 +388,8 @@ export default function ProductDetail() {
 
               <button
                 onClick={() => toggleWishlist(product)}
-                className={`w-12 h-12 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer shrink-0 transition-colors ${
-                  isWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
-                }`}
+                className={`w-12 h-12 rounded-full border border-slate-200 bg-white flex items-center justify-center cursor-pointer shrink-0 transition-colors ${isWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                  }`}
                 title={isWish ? "Remove from Wishlist" : "Add to Wishlist"}
               >
                 <Heart size={20} fill={isWish ? "currentColor" : "none"} />
@@ -457,9 +454,8 @@ export default function ProductDetail() {
 
                       <button
                         onClick={() => toggleWishlist(p)}
-                        className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer shadow-sm z-10 transition-colors ${
-                          inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
-                        }`}
+                        className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer shadow-sm z-10 transition-colors ${inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                          }`}
                         title="Toggle Wishlist"
                       >
                         <Heart size={18} fill={inWish ? "currentColor" : "none"} />
@@ -477,7 +473,7 @@ export default function ProductDetail() {
 
                     {/* Details */}
                     <div className="p-5 flex flex-col flex-1">
-                      
+
                       <div className="flex items-center gap-1 mb-2">
                         <div className="flex text-amber-400">
                           <Star size={14} fill="currentColor" stroke="currentColor" />
@@ -506,11 +502,10 @@ export default function ProductDetail() {
                             <button
                               key={v.id}
                               onClick={() => handleSelectVariantForProduct(p.id, v)}
-                              className={`text-xs font-bold px-2 py-1 rounded-md cursor-pointer transition-all ${
-                                activeVariant.id === v.id
-                                  ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
-                                  : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
-                              }`}
+                              className={`text-xs font-bold px-2 py-1 rounded-md cursor-pointer transition-all ${activeVariant.id === v.id
+                                ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
+                                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                                }`}
                             >
                               {v.weight_or_volume}
                             </button>
@@ -566,7 +561,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
+
             {/* Write a Review Card */}
             <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
               <h3 className="text-lg font-extrabold text-slate-900 mb-1">Write a Product Review</h3>
@@ -575,16 +570,15 @@ export default function ProductDetail() {
               </p>
 
               {reviewMsg && (
-                <div className={`p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2 ${
-                  reviewMsg.includes('Thank you') ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                }`}>
+                <div className={`p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2 ${reviewMsg.includes('Thank you') ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                  }`}>
                   <CheckCircle size={16} />
                   <span>{reviewMsg}</span>
                 </div>
               )}
 
               <form onSubmit={handleReviewSubmit} className="space-y-4">
-                
+
                 {/* Rating Selection */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">

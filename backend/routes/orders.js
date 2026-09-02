@@ -3,10 +3,10 @@ const router = express.Router();
 const db = require('../db');
 const { requireAuth: authMiddleware, optionalAuth } = require('../middleware/auth');
 
-// @route   POST /api/orders/create
+// @route   POST /api/orders/createOrder
 // @desc    Create a new order (pending payment)
 // @access  Public (supports Guest Checkout)
-router.post('/create', optionalAuth, async (req, res) => {
+router.post('/createOrder', optionalAuth, async (req, res) => {
   const {
     items, // Array of { product_id, variant_id, quantity }
     shipping_address,
@@ -90,7 +90,7 @@ router.post('/create', optionalAuth, async (req, res) => {
     `;
 
     // Generate a mock payment ID for sandbox transaction representation
-    const mockPaymentId = payment_method === 'upi' 
+    const mockPaymentId = payment_method === 'upi'
       ? `pay_mock_${Math.random().toString(36).substring(2, 15)}`
       : null;
 
@@ -149,10 +149,10 @@ router.post('/create', optionalAuth, async (req, res) => {
   }
 });
 
-// @route   POST /api/orders/verify
+// @route   POST /api/orders/verifyPayment
 // @desc    Verify UPI/Razorpay mock payment & update stock
 // @access  Public (secure signature validation mock)
-router.post('/verify', async (req, res) => {
+router.post('/verifyPayment', async (req, res) => {
   const { order_id, payment_id, status } = req.body; // status is 'success' or 'failed'
 
   if (!order_id || !payment_id) {
@@ -242,10 +242,10 @@ router.post('/verify', async (req, res) => {
   }
 });
 
-// @route   GET /api/orders/history
+// @route   GET /api/orders/orderHistory
 // @desc    Get order history for logged-in user
 // @access  Private
-router.get('/history', authMiddleware, async (req, res) => {
+router.get('/orderHistory', authMiddleware, async (req, res) => {
   try {
     const query = `
       SELECT o.id, o.status, o.total_amount, o.payment_method, o.payment_status, o.created_at,
@@ -351,8 +351,8 @@ router.put('/:id/cancel', authMiddleware, async (req, res) => {
     const cancellableStatuses = ['pending', 'paid', 'processing'];
     if (!cancellableStatuses.includes(order.status)) {
       await client.query('ROLLBACK');
-      return res.status(400).json({ 
-        message: `Order cannot be cancelled because it is already ${order.status}` 
+      return res.status(400).json({
+        message: `Order cannot be cancelled because it is already ${order.status}`
       });
     }
 
@@ -391,10 +391,10 @@ router.put('/:id/cancel', authMiddleware, async (req, res) => {
 
 // Admin routes (included in orders for modularity)
 
-// @route   GET /api/orders/admin/queue
+// @route   GET /api/orders/admin/ordersQueue
 // @desc    Get all orders for admin view (Live queue)
 // @access  Private (role CHECK admin/staff)
-router.get('/admin/queue', authMiddleware, async (req, res) => {
+router.get('/admin/ordersQueue', authMiddleware, async (req, res) => {
   if (req.user.role !== 'admin' && req.user.role !== 'staff') {
     return res.status(403).json({ message: 'Forbidden. Admin access required' });
   }
@@ -440,10 +440,10 @@ router.get('/admin/queue', authMiddleware, async (req, res) => {
   }
 });
 
-// @route   PUT /api/orders/admin/:id/status
+// @route   PUT /api/orders/admin/:id/updateOrderStatus
 // @desc    Update order status manually by admin
 // @access  Private (role CHECK admin/staff)
-router.put('/admin/:id/status', authMiddleware, async (req, res) => {
+router.put('/admin/:id/updateOrderStatus', authMiddleware, async (req, res) => {
   if (req.user.role !== 'admin' && req.user.role !== 'staff') {
     return res.status(403).json({ message: 'Forbidden. Admin access required' });
   }

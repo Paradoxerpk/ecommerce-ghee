@@ -50,10 +50,10 @@ function slugify(text) {
     .replace(/\-\-+/g, '-');
 }
 
-// @route   POST /api/products/upload
+// @route   POST /api/products/admin/uploadImage
 // @desc    Upload product image file
 // @access  Private (Admin/Staff)
-router.post('/upload', adminAuth, upload.single('image'), (req, res) => {
+router.post('/admin/uploadImage', adminAuth, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No image file uploaded' });
   }
@@ -87,10 +87,10 @@ router.get('/categories', async (req, res) => {
   }
 });
 
-// @route   GET /api/products/admin/all
+// @route   GET /api/products/admin/allProducts
 // @desc    Get all products (including inactive ones) with all variants for Admin management
 // @access  Private (Admin/Staff)
-router.get('/admin/all', adminAuth, async (req, res) => {
+router.get('/admin/allProducts', adminAuth, async (req, res) => {
   try {
     const queryText = `
       SELECT p.id, p.category_id, p.name, p.slug, p.description, p.images, p.active, p.created_at,
@@ -122,10 +122,10 @@ router.get('/admin/all', adminAuth, async (req, res) => {
   }
 });
 
-// @route   POST /api/products/admin
+// @route   POST /api/products/admin/addProduct
 // @desc    Create a new product with initial variants
 // @access  Private (Admin/Staff)
-router.post('/admin', adminAuth, async (req, res) => {
+router.post('/admin/addProduct', adminAuth, async (req, res) => {
   const { name, category_id, description, images, active, variants } = req.body;
 
   if (!name || !description) {
@@ -197,9 +197,10 @@ router.post('/admin', adminAuth, async (req, res) => {
 });
 
 // @route   PUT /api/products/admin/:id
+// @route   PUT /api/products/admin/updateProduct/:id
 // @desc    Update product details and manage variants
 // @access  Private (Admin/Staff)
-router.put('/admin/:id', adminAuth, async (req, res) => {
+router.put('/admin/updateProduct/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const { name, category_id, description, images, active, variants } = req.body;
 
@@ -279,10 +280,10 @@ router.put('/admin/:id', adminAuth, async (req, res) => {
   }
 });
 
-// @route   DELETE /api/products/admin/:id
+// @route   DELETE /api/products/admin/deleteProduct/:id
 // @desc    Delete a product (or soft-delete if foreign keys exist)
 // @access  Private (Admin/Staff)
-router.delete('/admin/:id', adminAuth, async (req, res) => {
+router.delete('/admin/deleteProduct/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -301,10 +302,10 @@ router.delete('/admin/:id', adminAuth, async (req, res) => {
   }
 });
 
-// @route   PUT /api/products/admin/variants/:variantId
+// @route   PUT /api/products/admin/updateVariant/:variantId
 // @desc    Quick update single variant price/stock
 // @access  Private (Admin/Staff)
-router.put('/admin/variants/:variantId', adminAuth, async (req, res) => {
+router.put('/admin/updateVariant/:variantId', adminAuth, async (req, res) => {
   const { variantId } = req.params;
   const { price, stock, active } = req.body;
 
@@ -330,10 +331,10 @@ router.put('/admin/variants/:variantId', adminAuth, async (req, res) => {
   }
 });
 
-// @route   DELETE /api/products/admin/variants/:variantId
+// @route   DELETE /api/products/admin/deleteVariant/:variantId
 // @desc    Delete a variant
 // @access  Private (Admin/Staff)
-router.delete('/admin/variants/:variantId', adminAuth, async (req, res) => {
+router.delete('/admin/deleteVariant/:variantId', adminAuth, async (req, res) => {
   const { variantId } = req.params;
   try {
     await db.query('DELETE FROM product_variants WHERE id = $1', [variantId]);

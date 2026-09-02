@@ -4,7 +4,7 @@ import { API_BASE, useAuth } from '../context/AuthContext';
 
 export default function ProductFormModal({ isOpen, onClose, onSave, productToEdit, categories }) {
   const { token } = useAuth();
-  
+
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState(1);
   const [description, setDescription] = useState('');
@@ -14,7 +14,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
   const [variants, setVariants] = useState([
     { weight_or_volume: '500g Jar', price: '350.00', stock: '50', sku: '', active: true }
   ]);
-  
+
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -24,7 +24,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
       setName(productToEdit.name || '');
       setCategoryId(productToEdit.category_id || (categories[0]?.id || 1));
       setDescription(productToEdit.description || '');
-      
+
       if (Array.isArray(productToEdit.images) && productToEdit.images.length > 0) {
         setImagesList(productToEdit.images);
       } else if (typeof productToEdit.images === 'string') {
@@ -32,7 +32,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
       } else {
         setImagesList(['/images/cow_ghee_front.webp']);
       }
-      
+
       setActive(productToEdit.active !== undefined ? productToEdit.active : true);
 
       if (Array.isArray(productToEdit.variants) && productToEdit.variants.length > 0) {
@@ -76,7 +76,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
         const formData = new FormData();
         formData.append('image', file);
 
-        const res = await fetch(`${API_BASE}/products/upload`, {
+        const res = await fetch(`${API_BASE}/products/admin/uploadImage`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -298,7 +298,7 @@ export default function ProductFormModal({ isOpen, onClose, onSave, productToEdi
 
             {/* Upload Action Bar */}
             <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-              
+
               <label className="btn btn-primary px-4 py-2.5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shrink-0">
                 {uploadingImage ? <Loader size={18} className="spin" /> : <Upload size={18} />}
                 {uploadingImage ? 'Uploading Image...' : 'Upload Image File'}

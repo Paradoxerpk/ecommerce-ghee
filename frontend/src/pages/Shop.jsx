@@ -76,18 +76,26 @@ const WEIGHT_OPTIONS = ['100g Pouch', '250g Jar', '500g Jar', '1L Jar', '250g Gl
 
 export default function Shop() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const categoryParam = searchParams.get('category') || '';
-  
+  const selectedCategory = searchParams.get('category') || '';
+  const setSelectedCategory = (cat) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (cat) {
+      newParams.set('category', cat);
+    } else {
+      newParams.delete('category');
+    }
+    setSearchParams(newParams);
+  };
+
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [categories, setCategories] = useState([
     { name: 'Cow Ghee', slug: 'cow-ghee' },
     { name: 'Buffalo Ghee', slug: 'buffalo-ghee' },
     { name: 'Premium A2 Ghee', slug: 'premium-a2-ghee' }
   ]);
-  
+
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(categoryParam);
   const [selectedWeight, setSelectedWeight] = useState('');
   const [maxPrice, setMaxPrice] = useState(2500);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -97,10 +105,6 @@ export default function Shop() {
 
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    setSelectedCategory(categoryParam);
-  }, [categoryParam]);
 
   useEffect(() => {
     const fetchCatalogData = async () => {
@@ -143,18 +147,18 @@ export default function Shop() {
       filtered = filtered.filter(p => p.category_slug === selectedCategory);
     }
     if (search) {
-      filtered = filtered.filter(p => 
-        p.name.toLowerCase().includes(search.toLowerCase()) || 
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.description.toLowerCase().includes(search.toLowerCase())
       );
     }
     if (selectedWeight) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.variants && p.variants.some(v => v.weight_or_volume === selectedWeight)
       );
     }
     if (maxPrice) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.variants && p.variants.some(v => parseFloat(v.price) <= maxPrice)
       );
     }
@@ -184,8 +188,8 @@ export default function Shop() {
           <Filter size={18} className="text-[#0033B4]" />
           <span>Filters</span>
         </div>
-        <button 
-          onClick={handleResetFilters} 
+        <button
+          onClick={handleResetFilters}
           className="text-[#0033B4] hover:text-[#002688] text-xs font-bold flex items-center gap-1 cursor-pointer"
         >
           <RefreshCw size={13} /> Reset
@@ -199,22 +203,22 @@ export default function Shop() {
         </h4>
         <div className="space-y-2">
           <label className={`flex items-center gap-2.5 text-sm cursor-pointer ${selectedCategory === '' ? 'font-bold text-[#0033B4]' : 'text-slate-700'}`}>
-            <input 
-              type="radio" 
-              name="category" 
-              checked={selectedCategory === ''} 
-              onChange={() => { setSelectedCategory(''); setSearchParams({}); setMobileFilterOpen(false); }} 
+            <input
+              type="radio"
+              name="category"
+              checked={selectedCategory === ''}
+              onChange={() => { setSelectedCategory(''); setSearchParams({}); setMobileFilterOpen(false); }}
               className="accent-[#0033B4]"
             />
             <span>All Categories</span>
           </label>
           {categories.map(cat => (
             <label key={cat.slug} className={`flex items-center gap-2.5 text-sm cursor-pointer ${selectedCategory === cat.slug ? 'font-bold text-[#0033B4]' : 'text-slate-700'}`}>
-              <input 
-                type="radio" 
-                name="category" 
-                checked={selectedCategory === cat.slug} 
-                onChange={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); setMobileFilterOpen(false); }} 
+              <input
+                type="radio"
+                name="category"
+                checked={selectedCategory === cat.slug}
+                onChange={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); setMobileFilterOpen(false); }}
                 className="accent-[#0033B4]"
               />
               <span>{cat.name}</span>
@@ -228,8 +232,8 @@ export default function Shop() {
         <h4 className="text-xs font-extrabold mb-3 uppercase tracking-wider text-slate-500">
           Package Size
         </h4>
-        <select 
-          value={selectedWeight} 
+        <select
+          value={selectedWeight}
           onChange={(e) => setSelectedWeight(e.target.value)}
           className="w-full text-sm p-2.5 rounded-lg border border-slate-200 bg-white text-slate-800"
         >
@@ -248,12 +252,12 @@ export default function Shop() {
           </h4>
           <strong className="text-[#0033B4] text-sm">₹{maxPrice}</strong>
         </div>
-        <input 
-          type="range" 
-          min="50" 
-          max="2500" 
-          step="50" 
-          value={maxPrice} 
+        <input
+          type="range"
+          min="50"
+          max="2500"
+          step="50"
+          value={maxPrice}
           onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
           className="w-full accent-[#0033B4] cursor-pointer"
         />
@@ -275,7 +279,7 @@ export default function Shop() {
 
   return (
     <div className="bg-[#FAF9F5] min-h-screen pb-16">
-      
+
       {/* 1. Header Banner */}
       <div className="bg-gradient-to-br from-[#0033B4] to-[#121F3E] text-white py-10 sm:py-14 shadow-md mb-8">
         <div className="container mx-auto px-4 text-center">
@@ -295,11 +299,10 @@ export default function Shop() {
           <div className="flex justify-center gap-2 flex-wrap">
             <button
               onClick={() => { setSelectedCategory(''); setSearchParams({}); }}
-              className={`px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer border ${
-                selectedCategory === '' 
-                  ? 'bg-[#F5C518] text-[#0033B4] border-[#F5C518]' 
-                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-              }`}
+              className={`px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer border ${selectedCategory === ''
+                ? 'bg-[#F5C518] text-[#0033B4] border-[#F5C518]'
+                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
             >
               All Ghee ({products.length})
             </button>
@@ -307,11 +310,10 @@ export default function Shop() {
               <button
                 key={cat.slug}
                 onClick={() => { setSelectedCategory(cat.slug); setSearchParams({ category: cat.slug }); }}
-                className={`px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer border ${
-                  selectedCategory === cat.slug 
-                    ? 'bg-[#F5C518] text-[#0033B4] border-[#F5C518]' 
-                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                }`}
+                className={`px-4 py-2 rounded-full font-extrabold text-xs sm:text-sm transition-all cursor-pointer border ${selectedCategory === cat.slug
+                  ? 'bg-[#F5C518] text-[#0033B4] border-[#F5C518]'
+                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                  }`}
               >
                 {cat.name}
               </button>
@@ -322,7 +324,7 @@ export default function Shop() {
 
       {/* 2. Main Store Layout */}
       <div className="container mx-auto px-4 max-w-7xl">
-        
+
         {/* Mobile Filter Toggle Button */}
         <div className="lg:hidden mb-4">
           <button
@@ -337,7 +339,7 @@ export default function Shop() {
         {/* Mobile Filter Drawer */}
         {mobileFilterOpen && (
           <div className="fixed inset-0 z-50 bg-black/60 lg:hidden flex justify-end" onClick={() => setMobileFilterOpen(false)}>
-            <div 
+            <div
               className="bg-white w-4/5 max-w-xs h-full p-6 overflow-y-auto shadow-2xl flex flex-col justify-between"
               onClick={(e) => e.stopPropagation()}
             >
@@ -361,7 +363,7 @@ export default function Shop() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Desktop Sidebar Filter Panel */}
           <aside className="hidden lg:block lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 h-fit sticky top-24 shadow-sm">
             <FilterContent />
@@ -374,16 +376,16 @@ export default function Shop() {
               <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                 <div className="relative flex-1">
                   <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input 
-                    type="text" 
-                    placeholder="Search ghee products by name or description..." 
+                  <input
+                    type="text"
+                    placeholder="Search ghee products by name or description..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-sm bg-white shadow-sm focus:outline-none focus:border-[#0033B4]"
                   />
                   {search && (
-                    <button 
-                      onClick={() => setSearch('')} 
+                    <button
+                      onClick={() => setSearch('')}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     >
                       <X size={16} />
@@ -464,9 +466,8 @@ export default function Shop() {
                         {/* Wishlist Button */}
                         <button
                           onClick={() => toggleWishlist(product)}
-                          className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer shadow-sm z-10 transition-colors ${
-                            inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
-                          }`}
+                          className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer shadow-sm z-10 transition-colors ${inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                            }`}
                           title={inWish ? "Remove from Wishlist" : "Add to Wishlist"}
                         >
                           <Heart size={18} fill={inWish ? "currentColor" : "none"} />
@@ -484,7 +485,7 @@ export default function Shop() {
 
                       {/* Product Content Body */}
                       <div className="p-5 flex flex-col flex-1">
-                        
+
                         {/* Rating Stars Summary */}
                         <div className="flex items-center gap-1 mb-2">
                           <div className="flex text-amber-400">
@@ -520,11 +521,10 @@ export default function Shop() {
                                 <button
                                   key={v.id}
                                   onClick={() => handleSelectVariantForProduct(product.id, v)}
-                                  className={`text-xs font-bold px-2 py-1 rounded-md cursor-pointer transition-all ${
-                                    isSelected
-                                      ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
-                                      : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
-                                  }`}
+                                  className={`text-xs font-bold px-2 py-1 rounded-md cursor-pointer transition-all ${isSelected
+                                    ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
+                                    : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                                    }`}
                                 >
                                   {v.weight_or_volume}
                                 </button>
@@ -546,11 +546,10 @@ export default function Shop() {
                             <button
                               onClick={() => addToCart(product, activeVariant, 1)}
                               disabled={isOutOfStock}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer ${
-                                isOutOfStock
-                                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                  : 'bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4]'
-                              }`}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer ${isOutOfStock
+                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                : 'bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4]'
+                                }`}
                             >
                               {isOutOfStock ? 'Sold Out' : '+ Cart'}
                             </button>

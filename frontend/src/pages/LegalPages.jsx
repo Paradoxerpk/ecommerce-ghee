@@ -38,7 +38,7 @@ export function Contact() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -49,7 +49,7 @@ export function Contact() {
     setError('');
 
     try {
-      const res = await fetch(`${API_BASE}/inquiries`, {
+      const res = await fetch(`${API_BASE}/inquiries/sendInquiry`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, phone, message })
@@ -78,7 +78,7 @@ export function Contact() {
         <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-10">
           Contact Us
         </h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Direct Details column */}
           <div className="lg:col-span-5">
@@ -125,7 +125,7 @@ export function Contact() {
           {/* Form column */}
           <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
             <h3 className="text-lg font-bold font-serif text-slate-900 mb-4">Send Us an Inquiry</h3>
-            
+
             {submitted ? (
               <div className="bg-emerald-50 border border-emerald-500 text-emerald-800 p-6 rounded-xl text-center space-y-3">
                 <CheckCircle size={36} className="mx-auto text-emerald-600" />
@@ -138,7 +138,7 @@ export function Contact() {
             ) : (
               <form onSubmit={handleSubmitInquiry} className="space-y-4">
                 {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
-                
+
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
                   <input
@@ -282,12 +282,12 @@ export function FAQ() {
         <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#0033B4] text-center mb-8">
           Frequently Asked Questions (FAQ)
         </h1>
-        
+
         <div className="space-y-3">
           {faqsList.map((faq, idx) => {
             const isOpen = openIdx === idx;
             return (
-              <div 
+              <div
                 key={idx}
                 className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm"
               >
