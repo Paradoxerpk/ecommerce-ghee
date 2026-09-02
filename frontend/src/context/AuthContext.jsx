@@ -2,8 +2,12 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 
 const AuthContext = createContext();
 
-// API URL configuration: Uses environment variable if set, otherwise defaults to local backend
-export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+// API URL configuration: Uses environment variable if set, or relative /api on production, otherwise defaults to local backend
+export const API_BASE = import.meta.env.VITE_API_BASE || (
+  typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+    ? `${window.location.origin}/api`
+    : 'http://localhost:5000/api'
+);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
