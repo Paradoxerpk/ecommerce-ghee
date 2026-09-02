@@ -1,30 +1,28 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Universal CORS & Preflight OPTIONS handler
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:5000',
-      'http://127.0.0.1:5173'
-    ];
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(null, true); // Allow all in dev
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-const path = require('path');
 
 // Body parser
 app.use(express.json());
@@ -35,10 +33,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Database connection pool setup
 const db = require('./db');
 
-// Database connection check
+// Database connection check on startup
 db.pool.connect((err, client, release) => {
   if (err) {
-    console.error('❌ Database connection failed. Please ensure PostgreSQL/Supabase is running and configured correctly in .env.');
+    console.error('❌ Database connection failed. Please ensure DATABASE_URL is configured correctly in Vercel environment variables.');
     console.error(err.message);
   } else {
     console.log('✅ Connected to PostgreSQL database successfully.');
@@ -46,7 +44,7 @@ db.pool.connect((err, client, release) => {
   }
 });
 
-// Setup routes (we import them here after defining db module to avoid circular dependencies)
+// Setup routes
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
@@ -63,6 +61,26 @@ app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
+// Health check endpoint for database diagnostics
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbTest = await db.query('SELECT NOW()');
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: dbTest.rows[0].now,
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      database: 'disconnected',
+      error: err.message,
+      environment: process.env.NODE_ENV || 'development'
+    });
+  }
+});
+
 // Base route
 app.get('/', (req, res) => {
   res.json({
@@ -71,18 +89,16 @@ app.get('/', (req, res) => {
   });
 });
 
-// Centralized error handler for safety
+// Centralized error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
     error: true,
-    message: process.env.NODE_ENV === 'production'
-      ? 'An unexpected error occurred. Please try again.'
-      : err.message
+    message: err.message || 'An unexpected error occurred.'
   });
 });
 
-// Start Server if run directly
+// Start Server if executed directly
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode.`);
