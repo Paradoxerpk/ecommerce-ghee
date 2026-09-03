@@ -16,7 +16,7 @@ const truncateDescription = (desc, maxWords = 18) => {
 export default function Wishlist() {
   const { isAuthenticated } = useAuth();
   const { wishlistItems, toggleWishlist, clearWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems = [] } = useCart();
 
   if (!isAuthenticated) {
     return (
@@ -117,13 +117,22 @@ export default function Wishlist() {
                       <Link to={`/product/${product.slug}`} className="btn btn-outline flex-1 py-2 text-xs text-center rounded-lg">
                         Details
                       </Link>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        disabled={isOutOfStock}
-                        className="btn btn-primary flex-1 py-2 text-xs flex items-center justify-center gap-1 rounded-lg font-extrabold"
-                      >
-                        <ShoppingCart size={14} /> Add to Cart
-                      </button>
+                      {cartItems.some(item => Number(item.variant_id) === Number(baseVariant.id)) ? (
+                        <Link
+                          to="/cart"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 py-2 text-xs flex items-center justify-center gap-1 rounded-lg font-extrabold transition-colors shadow-sm"
+                        >
+                          <ShoppingCart size={14} /> Go to Cart
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => handleAddToCart(product)}
+                          disabled={isOutOfStock}
+                          className="btn btn-primary flex-1 py-2 text-xs flex items-center justify-center gap-1 rounded-lg font-extrabold"
+                        >
+                          <ShoppingCart size={14} /> Add to Cart
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

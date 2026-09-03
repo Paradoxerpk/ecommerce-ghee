@@ -5,7 +5,7 @@ import { useAuth, API_BASE } from '../context/AuthContext';
 import { CreditCard, Check, AlertTriangle, ShieldCheck, ShoppingCart } from 'lucide-react';
 
 export default function Checkout() {
-  const { cartItems, getSubtotal, discountAmount, getOrderTotal, clearCart } = useCart();
+  const { cartItems, getSubtotal, getOrderTotal, clearCart } = useCart();
   const { isAuthenticated, user, token } = useAuth();
   const navigate = useNavigate();
 
@@ -335,12 +335,6 @@ export default function Checkout() {
                   <span>Subtotal</span>
                   <span>₹{subtotal.toFixed(2)}</span>
                 </div>
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>Discount</span>
-                    <span>-₹{discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
                 <div className="flex justify-between text-slate-600">
                   <span>Shipping</span>
                   <span className="text-emerald-600 font-bold">FREE</span>
