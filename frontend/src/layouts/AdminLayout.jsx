@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { 
-  ShoppingBag, ExternalLink, LogOut, ShieldCheck, Menu, X 
+import {
+  ShoppingBag, ExternalLink, LogOut, ShieldCheck, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,10 +19,10 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 text-slate-900">
-      
+
       {/* Mobile Sidebar Overlay */}
       {mobileSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-slate-900/60 lg:hidden"
           onClick={closeSidebar}
         />
@@ -36,15 +36,14 @@ export default function AdminLayout() {
         {/* Brand */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-[#F5C518] text-[#0033B4] w-8 h-8 rounded-lg flex items-center justify-center font-extrabold shrink-0">
-              <ShieldCheck size={18} />
-            </div>
-            <div>
-              <div className="text-white font-extrabold text-sm leading-tight">Sai Krishna</div>
-              <div className="text-[#F5C518] text-[10px] font-bold tracking-wider uppercase">Admin Panel</div>
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="Sai Krishna Ghee Admin" 
+              className="h-9 w-auto object-contain"
+            />
+            <div className="text-[#F5C518] text-[10px] font-bold tracking-wider uppercase bg-slate-800/80 px-2 py-0.5 rounded">Admin Panel</div>
           </div>
-          <button 
+          <button
             onClick={closeSidebar}
             className="lg:hidden text-slate-400 hover:text-white p-1"
           >
@@ -63,8 +62,7 @@ export default function AdminLayout() {
             end
             onClick={closeSidebar}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors font-medium ${
-                isActive ? 'text-white bg-slate-800 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors font-medium ${isActive ? 'text-white bg-slate-800 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
               }`
             }
           >
@@ -101,7 +99,7 @@ export default function AdminLayout() {
 
       {/* 2. Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        
+
         {/* Top Header */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30">
           <div className="flex items-center gap-3">
