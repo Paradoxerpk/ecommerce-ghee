@@ -60,7 +60,7 @@ export default function Home() {
   const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems = [] } = useCart();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#FAF9F5] text-slate-800">
-      
+
       {/* 1. Hero Showcase Section */}
       <section className="bg-gradient-to-br from-[#09122C] via-[#172554] to-[#1E3A8A] text-white py-12 lg:py-20 relative overflow-hidden">
         {/* Glow backdrop effect */}
@@ -100,7 +100,7 @@ export default function Home() {
 
         <div className="container mx-auto px-4 max-w-7xl relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
+
             {/* Left Hero Headline & Description */}
             <div className="lg:col-span-7 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/30 text-[#F5C518] px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold tracking-wide mb-6">
@@ -197,7 +197,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             <div className="bg-[#FAF9F5] p-6 rounded-2xl border border-slate-200 text-center hover:shadow-md transition-shadow">
               <div className="w-14 h-14 rounded-full bg-[#0033B4]/10 text-[#0033B4] inline-flex items-center justify-center mb-4">
                 <CheckCircle2 size={28} />
@@ -247,7 +247,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
+
             {/* Cow Ghee */}
             <div className="bg-gradient-to-br from-[#002688] to-[#0033B4] text-white rounded-2xl p-8 shadow-md flex flex-col justify-between min-h-[280px]">
               <div>
@@ -325,6 +325,9 @@ export default function Home() {
 
               const activeVariant = selectedVariantsMap[product.id] || variants[0];
               const inWish = isInWishlist(product.id);
+              const isVariantInCart = cartItems.some(
+                item => Number(item.variant_id) === Number(activeVariant.id)
+              );
               const mainImage = Array.isArray(product.images) && product.images.length > 0
                 ? product.images[0]
                 : '/images/ghee_hero.jpg';
@@ -342,9 +345,8 @@ export default function Home() {
 
                     <button
                       onClick={() => toggleWishlist(product)}
-                      className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer transition-colors z-10 ${
-                        inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
-                      }`}
+                      className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer transition-colors z-10 ${inWish ? 'text-red-500' : 'text-slate-400 hover:text-red-500'
+                        }`}
                       title="Toggle Wishlist"
                     >
                       <Heart size={18} fill={inWish ? 'currentColor' : 'none'} />
@@ -378,11 +380,10 @@ export default function Home() {
                           <button
                             key={v.id}
                             onClick={() => handleSelectVariant(product.id, v)}
-                            className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                              activeVariant.id === v.id
-                                ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
-                                : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
-                            }`}
+                            className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${activeVariant.id === v.id
+                              ? 'bg-[#0033B4]/10 text-[#0033B4] border border-[#0033B4]'
+                              : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'
+                              }`}
                           >
                             {v.weight_or_volume}
                           </button>
@@ -399,12 +400,21 @@ export default function Home() {
                         </span>
                       </div>
 
-                      <button
-                        onClick={() => addToCart(product, activeVariant, 1)}
-                        className="bg-[#0033B4] hover:bg-[#002688] text-white px-4 py-2 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <ShoppingBag size={14} /> + Cart
-                      </button>
+                      {isVariantInCart ? (
+                        <Link
+                          to="/cart"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors shadow-sm"
+                        >
+                          <ShoppingBag size={14} /> Go to Cart
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(product, activeVariant, 1)}
+                          className="bg-[#0033B4] hover:bg-[#002688] text-white px-4 py-2 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <ShoppingBag size={14} /> + Cart
+                        </button>
+                      )}
                     </div>
 
                   </div>
@@ -419,7 +429,7 @@ export default function Home() {
       <section className="py-12 sm:py-16 bg-[#FFFDF0] border-t border-b border-amber-200/60">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
+
             <div className="lg:col-span-7">
               <span className="text-xs font-extrabold text-[#0033B4] uppercase tracking-widest">
                 Vedic Heritage Craftsmanship

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, Tag, X, User } from 'lucide-react';
+import { Trash2, ShoppingBag, Plus, Minus, ArrowRight, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,17 +11,11 @@ export default function Cart() {
     updateQuantity,
     removeFromCart,
     getSubtotal,
-    applyCoupon,
-    removeCoupon,
-    couponCode,
-    discountAmount,
     getOrderTotal,
     clearCart
   } = useCart();
 
   const navigate = useNavigate();
-  const [couponInput, setCouponInput] = useState('');
-  const [couponFeedback, setCouponFeedback] = useState({ success: null, message: '' });
 
   if (!isAuthenticated) {
     return (
@@ -39,22 +33,6 @@ export default function Cart() {
       </div>
     );
   }
-
-  const handleApplyCoupon = (e) => {
-    e.preventDefault();
-    if (!couponInput) return;
-
-    const result = applyCoupon(couponInput);
-    setCouponFeedback(result);
-    if (result.success) {
-      setCouponInput('');
-    }
-  };
-
-  const handleRemoveCoupon = () => {
-    removeCoupon();
-    setCouponFeedback({ success: null, message: '' });
-  };
 
   const subtotal = getSubtotal();
   const total = getOrderTotal();
@@ -84,13 +62,13 @@ export default function Cart() {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* 1. Left Column: Cart Items List */}
           <div className="lg:col-span-8">
             <div className="space-y-4">
               {cartItems.map((item) => (
-                <div 
-                  key={item.variant_id} 
+                <div
+                  key={item.variant_id}
                   className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm"
                 >
                   {/* Mock package icon badge */}
@@ -106,7 +84,7 @@ export default function Cart() {
                       <Link to={`/product/${item.slug}`} className="hover:text-[#0033B4] transition-colors">{item.name}</Link>
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      Weight: <strong className="text-slate-700">{item.weight_or_volume}</strong> | SKU: {item.sku}
+                      Weight: <strong className="text-slate-700">{item.weight_or_volume}</strong>
                     </p>
                     <p className="text-sm font-black text-[#0033B4] mt-1">
                       ₹{item.price.toFixed(2)}
@@ -154,8 +132,8 @@ export default function Cart() {
               <Link to="/shop" className="btn btn-outline px-5 py-2 text-xs sm:text-sm font-semibold">
                 Continue Shopping
               </Link>
-              <button 
-                onClick={clearCart} 
+              <button
+                onClick={clearCart}
                 className="text-red-500 hover:underline text-xs sm:text-sm font-semibold cursor-pointer"
               >
                 Clear Entire Cart
@@ -163,51 +141,8 @@ export default function Cart() {
             </div>
           </div>
 
-          {/* 2. Right Column: Summary & Coupon */}
+          {/* 2. Right Column: Summary */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Coupon Code Panel */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-              <h4 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-1.5">
-                <Tag size={16} className="text-[#0033B4]" /> Have a Promo Coupon?
-              </h4>
-              
-              {!couponCode ? (
-                <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Enter GHEE10 or FESTIVE50"
-                    value={couponInput}
-                    onChange={(e) => setCouponInput(e.target.value)}
-                    className="flex-1 p-2.5 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-[#0033B4]"
-                  />
-                  <button type="submit" className="btn btn-primary px-4 py-2.5 text-xs font-bold rounded-lg shrink-0">
-                    Apply
-                  </button>
-                </form>
-              ) : (
-                <div className="flex justify-between items-center bg-emerald-50 border border-dashed border-emerald-500 p-3 rounded-lg text-emerald-700 font-bold text-xs">
-                  <span>Code: {couponCode} Applied</span>
-                  <button 
-                    onClick={handleRemoveCoupon}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
-
-              {/* Feedback message */}
-              {couponFeedback.message && (
-                <p className={`text-xs mt-2 font-medium ${couponFeedback.success ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {couponFeedback.message}
-                </p>
-              )}
-
-              <p className="text-[11px] text-slate-400 mt-3">
-                * Try coupon <strong className="text-slate-700">GHEE10</strong> for 10% off or <strong className="text-slate-700">FESTIVE50</strong> for Rs. 50 flat off!
-              </p>
-            </div>
-
             {/* Order Total breakdown */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
               <h3 className="text-lg font-bold font-serif text-slate-900 mb-4 pb-3 border-b border-slate-100">
@@ -219,13 +154,6 @@ export default function Cart() {
                   <span>Subtotal</span>
                   <span className="font-bold text-slate-900">₹{subtotal.toFixed(2)}</span>
                 </div>
-
-                {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>Applied Discount</span>
-                    <span>-₹{discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
 
                 <div className="flex justify-between text-slate-600">
                   <span>Shipping Fee</span>

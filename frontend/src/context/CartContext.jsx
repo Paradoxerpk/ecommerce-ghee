@@ -9,8 +9,6 @@ export const CartProvider = ({ children }) => {
   const { showAlert } = useModal();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [couponCode, setCouponCode] = useState('');
-  const [discountAmount, setDiscountAmount] = useState(0);
 
   const debounceTimer = useRef(null);
 
@@ -169,45 +167,14 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     persistCart([]);
-    setCouponCode('');
-    setDiscountAmount(0);
   };
 
   const getSubtotal = () => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
-  const applyCoupon = (code) => {
-    const cleanCode = code.toUpperCase().trim();
-    setCouponCode(cleanCode);
-
-    const subtotal = getSubtotal();
-    if (cleanCode === 'GHEE10') {
-      setDiscountAmount(subtotal * 0.10);
-      return { success: true, message: '10% discount applied successfully!' };
-    } else if (cleanCode === 'FESTIVE50') {
-      setDiscountAmount(50);
-      return { success: true, message: 'Rs. 50 flat discount applied!' };
-    } else {
-      setDiscountAmount(0);
-      return { success: false, message: 'Invalid coupon code' };
-    }
-  };
-
-  const removeCoupon = () => {
-    setCouponCode('');
-    setDiscountAmount(0);
-  };
-
-  useEffect(() => {
-    if (couponCode) {
-      applyCoupon(couponCode);
-    }
-  }, [cartItems]);
-
   const getOrderTotal = () => {
-    const subtotal = getSubtotal();
-    return Math.max(0, subtotal - discountAmount);
+    return getSubtotal();
   };
 
   return (
@@ -215,15 +182,11 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems: isAuthenticated ? cartItems : [],
         loading,
-        couponCode,
-        discountAmount,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         getSubtotal,
-        applyCoupon,
-        removeCoupon,
         getOrderTotal,
         cartCount: isAuthenticated ? cartItems.reduce((count, item) => count + item.quantity, 0) : 0
       }}

@@ -89,7 +89,7 @@ export default function ProductDetail() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewMsg, setReviewMsg] = useState(null);
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems = [] } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
@@ -378,13 +378,22 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              <button
-                onClick={handleAddToCart}
-                disabled={isOutOfStock}
-                className="btn btn-primary flex-1 h-12 text-sm sm:text-base font-extrabold"
-              >
-                <ShoppingBag size={18} /> {isOutOfStock ? 'Sold Out' : 'Add to Shopping Cart'}
-              </button>
+              {selectedVariant && cartItems.some(item => Number(item.variant_id) === Number(selectedVariant.id)) ? (
+                <Link
+                  to="/cart"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1 h-12 text-sm sm:text-base font-extrabold flex items-center justify-center gap-2 rounded-xl transition-colors shadow-md"
+                >
+                  <ShoppingBag size={18} /> Go to Cart
+                </Link>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock}
+                  className="btn btn-primary flex-1 h-12 text-sm sm:text-base font-extrabold"
+                >
+                  <ShoppingBag size={18} /> {isOutOfStock ? 'Sold Out' : 'Add to Shopping Cart'}
+                </button>
+              )}
 
               <button
                 onClick={() => toggleWishlist(product)}
@@ -523,12 +532,21 @@ export default function ProductDetail() {
                         </div>
 
                         <div className="flex gap-1.5">
-                          <button
-                            onClick={() => addToCart(p, activeVariant, 1)}
-                            className="bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4] px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer"
-                          >
-                            <ShoppingBag size={14} /> + Cart
-                          </button>
+                          {cartItems.some(item => Number(item.variant_id) === Number(activeVariant.id)) ? (
+                            <Link
+                              to="/cart"
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors shadow-sm"
+                            >
+                              <ShoppingBag size={13} /> Go to Cart
+                            </Link>
+                          ) : (
+                            <button
+                              onClick={() => addToCart(p, activeVariant, 1)}
+                              className="bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4] px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer"
+                            >
+                              <ShoppingBag size={14} /> + Cart
+                            </button>
+                          )}
 
                           <Link
                             to={`/product/${p.slug}`}

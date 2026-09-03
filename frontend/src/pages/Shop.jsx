@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Search, Filter, RefreshCw, Star, Heart, ArrowRight, X, ShieldCheck, Check, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter, RefreshCw, Star, Heart, ArrowRight, X, ShieldCheck, Check, SlidersHorizontal, ShoppingBag } from 'lucide-react';
 import { API_BASE } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
@@ -105,7 +105,7 @@ export default function Shop() {
   const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems = [] } = useCart();
 
   useEffect(() => {
     const fetchCatalogData = async () => {
@@ -442,6 +442,9 @@ export default function Shop() {
                   const activeVariant = selectedVariantsMap[product.id] || variants[0];
                   const inWish = isInWishlist(product.id);
                   const isOutOfStock = activeVariant.stock <= 0;
+                  const isVariantInCart = cartItems.some(
+                    item => Number(item.variant_id) === Number(activeVariant.id)
+                  );
 
                   const reviews = product.reviews || [];
                   const avgRating = reviews.length > 0
@@ -544,16 +547,25 @@ export default function Shop() {
                           </div>
 
                           <div className="flex gap-1.5">
-                            <button
-                              onClick={() => addToCart(product, activeVariant, 1)}
-                              disabled={isOutOfStock}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer ${isOutOfStock
-                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                : 'bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4]'
-                                }`}
-                            >
-                              {isOutOfStock ? 'Sold Out' : '+ Cart'}
-                            </button>
+                            {isVariantInCart ? (
+                              <Link
+                                to="/cart"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors shadow-sm"
+                              >
+                                <ShoppingBag size={13} /> Go to Cart
+                              </Link>
+                            ) : (
+                              <button
+                                onClick={() => addToCart(product, activeVariant, 1)}
+                                disabled={isOutOfStock}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer ${isOutOfStock
+                                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                  : 'bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4]'
+                                  }`}
+                              >
+                                {isOutOfStock ? 'Sold Out' : '+ Cart'}
+                              </button>
+                            )}
 
                             <Link
                               to={`/product/${product.slug}`}
