@@ -142,6 +142,39 @@ export const CartProvider = ({ children }) => {
     persistCart(updatedCart);
   };
 
+  const addMultipleToCart = (items) => {
+    if (!isAuthenticated || !Array.isArray(items) || items.length === 0) return;
+    let updatedCart = [...cartItems];
+
+    for (const { product, variant, quantity = 1 } of items) {
+      if (!variant) continue;
+      const existingIndex = updatedCart.findIndex(
+        item => item.variant_id === variant.id
+      );
+
+      if (existingIndex > -1) {
+        const currentQty = updatedCart[existingIndex].quantity;
+        const targetQty = currentQty + quantity;
+        updatedCart[existingIndex].quantity = Math.min(targetQty, variant.stock);
+      } else {
+        updatedCart.push({
+          product_id: product.id,
+          variant_id: variant.id,
+          name: product.name,
+          slug: product.slug,
+          images: product.images,
+          weight_or_volume: variant.weight_or_volume,
+          price: parseFloat(variant.price),
+          stock: variant.stock,
+          sku: variant.sku,
+          quantity: Math.min(quantity, variant.stock)
+        });
+      }
+    }
+
+    persistCart(updatedCart);
+  };
+
   const removeFromCart = (variantId) => {
     if (!isAuthenticated) return;
     const updatedCart = cartItems.filter(item => item.variant_id !== variantId);
@@ -183,6 +216,7 @@ export const CartProvider = ({ children }) => {
         cartItems: isAuthenticated ? cartItems : [],
         loading,
         addToCart,
+        addMultipleToCart,
         removeFromCart,
         updateQuantity,
         clearCart,

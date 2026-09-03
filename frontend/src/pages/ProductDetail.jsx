@@ -351,7 +351,7 @@ export default function ProductDetail() {
                     </span>
                   ) : (
                     <span className="text-emerald-600 flex items-center gap-1 font-bold text-xs sm:text-sm">
-                      <Check size={18} /> In Stock (SKU: {selectedVariant.sku})
+                      <Check size={18} /> In Stock
                     </span>
                   )}
                 </div>
@@ -542,9 +542,13 @@ export default function ProductDetail() {
                           ) : (
                             <button
                               onClick={() => addToCart(p, activeVariant, 1)}
-                              className="bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4] px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer"
+                              disabled={activeVariant.stock <= 0}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold flex items-center gap-1 transition-colors cursor-pointer ${activeVariant.stock <= 0
+                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                : 'bg-[#F5C518] hover:bg-[#D8AA0D] text-[#0033B4]'
+                                }`}
                             >
-                              <ShoppingBag size={14} /> + Cart
+                              <ShoppingBag size={14} /> {activeVariant.stock <= 0 ? 'Sold Out' : '+ Cart'}
                             </button>
                           )}
 

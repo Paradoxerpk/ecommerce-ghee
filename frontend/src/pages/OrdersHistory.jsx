@@ -7,7 +7,7 @@ import { useModal } from '../context/ModalContext';
 
 export default function OrdersHistory() {
   const { token, isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
+  const { addMultipleToCart } = useCart();
   const { showConfirm, showAlert } = useModal();
   const navigate = useNavigate();
 
@@ -43,29 +43,26 @@ export default function OrdersHistory() {
     fetchOrderHistory();
   }, [isAuthenticated, token, navigate]);
 
-  const handleReorder = async (orderItems) => {
-    for (const item of orderItems) {
-      try {
-        const mockProduct = {
-          id: item.product_id || 1,
-          name: item.name,
-          slug: item.slug || 'sai-krishna-pure-cow-ghee',
-          images: ['/images/cow_ghee_front.webp']
-        };
+  const handleReorder = (orderItems) => {
+    if (!Array.isArray(orderItems) || orderItems.length === 0) return;
 
-        const mockVariant = {
-          id: item.variant_id || 1,
-          weight_or_volume: item.weight_or_volume,
-          price: parseFloat(item.price_per_unit),
-          stock: 100
-        };
+    const itemsToAdd = orderItems.map(item => ({
+      product: {
+        id: item.product_id || 1,
+        name: item.name,
+        slug: item.slug || 'sai-krishna-pure-cow-ghee',
+        images: ['/images/cow_ghee_front.webp']
+      },
+      variant: {
+        id: item.variant_id || 1,
+        weight_or_volume: item.weight_or_volume,
+        price: parseFloat(item.price_per_unit),
+        stock: 100
+      },
+      quantity: item.quantity
+    }));
 
-        addToCart(mockProduct, mockVariant, item.quantity);
-      } catch (e) {
-        console.error('Error during reorder item addition:', e);
-      }
-    }
-
+    addMultipleToCart(itemsToAdd);
     navigate('/cart');
   };
 

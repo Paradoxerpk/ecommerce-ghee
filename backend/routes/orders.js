@@ -123,6 +123,11 @@ router.post('/createOrder', optionalAuth, async (req, res) => {
       }
     }
 
+    // 4. Clear database cart for authenticated user
+    if (userId) {
+      await client.query('DELETE FROM cart_items WHERE user_id = $1', [userId]);
+    }
+
     await client.query('COMMIT');
 
     // Return the response

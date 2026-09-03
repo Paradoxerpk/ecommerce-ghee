@@ -2,23 +2,60 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth, API_BASE } from '../context/AuthContext';
-import { CreditCard, Check, AlertTriangle, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { CreditCard, Check, AlertTriangle, ShieldCheck, ShoppingCart, MapPin } from 'lucide-react';
+
+const INDIAN_STATES = [
+  'Tamil Nadu',
+  'Andhra Pradesh',
+  'Karnataka',
+  'Kerala',
+  'Telangana',
+  'Maharashtra',
+  'Gujarat',
+  'Delhi',
+  'Uttar Pradesh',
+  'West Bengal',
+  'Rajasthan',
+  'Madhya Pradesh',
+  'Bihar',
+  'Punjab',
+  'Haryana',
+  'Odisha',
+  'Assam',
+  'Goa',
+  'Puducherry',
+  'Jammu and Kashmir',
+  'Other State / UT'
+];
 
 export default function Checkout() {
   const { cartItems, getSubtotal, getOrderTotal, clearCart } = useCart();
   const { isAuthenticated, user, token } = useAuth();
   const navigate = useNavigate();
 
-  // Address and Contact State
-  const [shippingAddress, setShippingAddress] = useState('');
+  // Structured Address State
+  const [doorNo, setDoorNo] = useState('');
+  const [street, setStreet] = useState('');
+  const [landmark, setLandmark] = useState('');
+  const [city, setCity] = useState('');
+  const [stateName, setStateName] = useState('Tamil Nadu');
+  const [pincode, setPincode] = useState('');
+
+  // Contact State
   const [contactNumber, setContactNumber] = useState(user?.phone || '');
   const [deliveryPreference, setDeliveryPreference] = useState('standard');
   const [paymentMethod, setPaymentMethod] = useState('upi'); // default upi
 
+  // Synchronize contactNumber if user profile loads asynchronously
+  React.useEffect(() => {
+    if (user?.phone && !contactNumber) {
+      setContactNumber(user.phone);
+    }
+  }, [user]);
+
   // Guest Details if not logged in
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
-  const [guestPhone, setGuestPhone] = useState('');
 
   // Processing state
   const [loading, setLoading] = useState(false);
@@ -45,19 +82,39 @@ export default function Checkout() {
     setLoading(true);
 
     // Validation
-    if (!shippingAddress || !contactNumber) {
-      setErrorMessage('Please fill in shipping address and contact number');
+    if (!doorNo.trim() || !street.trim() || !city.trim() || !pincode.trim()) {
+      setErrorMessage('Please fill in all required address fields (Door No, Street, City, Pincode)');
+      setLoading(false);
+      return;
+    }
+
+    if (!/^\d{6}$/.test(pincode.trim())) {
+      setErrorMessage('Please enter a valid 6-digit postal Pincode');
+      setLoading(false);
+      return;
+    }
+
+    const cleanPhone = contactNumber.trim().replace(/\D/g, '');
+    if (!cleanPhone || cleanPhone.length < 10) {
+      setErrorMessage('Please enter a valid 10-digit mobile number for courier updates');
       setLoading(false);
       return;
     }
 
     if (!isAuthenticated) {
-      if (!guestName || !guestEmail) {
+      if (!guestName.trim() || !guestEmail.trim()) {
         setErrorMessage('Please provide contact name and email for guest checkout');
         setLoading(false);
         return;
       }
     }
+
+    const formattedAddress = [
+      doorNo.trim(),
+      street.trim(),
+      landmark.trim() ? `Near: ${landmark.trim()}` : null,
+      `${city.trim()}, ${stateName} - ${pincode.trim()}`
+    ].filter(Boolean).join(', ');
 
     const orderPayload = {
       items: cartItems.map(item => ({
@@ -65,13 +122,13 @@ export default function Checkout() {
         variant_id: item.variant_id,
         quantity: item.quantity
       })),
-      shipping_address: shippingAddress,
-      contact_number: contactNumber,
+      shipping_address: formattedAddress,
+      contact_number: cleanPhone,
       delivery_preference: deliveryPreference,
       payment_method: paymentMethod,
-      guest_name: isAuthenticated ? null : guestName,
-      guest_email: isAuthenticated ? null : guestEmail,
-      guest_phone: isAuthenticated ? null : (guestPhone || contactNumber)
+      guest_name: isAuthenticated ? null : guestName.trim(),
+      guest_email: isAuthenticated ? null : guestEmail.trim(),
+      guest_phone: isAuthenticated ? null : cleanPhone
     };
 
     try {
@@ -207,52 +264,128 @@ export default function Checkout() {
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Contact Mobile (For updates) *</label>
-                    <input
-                      type="tel"
-                      placeholder="e.g. 9876543210"
-                      value={guestPhone}
-                      onChange={(e) => setGuestPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
-                    />
-                  </div>
                 </div>
               )}
             </div>
 
             {/* Shipping & Delivery Options Block */}
             <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-              <h3 className="text-lg font-bold font-serif text-[#0033B4] pb-3 border-b border-slate-100 m-0">
-                Shipping Address & Delivery
+              <h3 className="text-lg font-bold font-serif text-[#0033B4] pb-3 border-b border-slate-100 m-0 flex items-center gap-2">
+                <MapPin size={20} /> Shipping Address & Delivery
               </h3>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Complete Shipping Address *</label>
-                <textarea
-                  rows="3"
-                  placeholder="House/Plot No, Street, Landmark, City, State, Pincode"
-                  value={shippingAddress}
-                  onChange={(e) => setShippingAddress(e.target.value)}
-                  required
-                  className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
-                />
-              </div>
-
+              {/* Door / Building & Street */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Contact Number (For Courier) *</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Flat / House No. & Building Name *
+                  </label>
                   <input
-                    type="tel"
-                    placeholder="Courier contact number"
-                    value={contactNumber}
-                    onChange={(e) => setContactNumber(e.target.value)}
+                    type="text"
+                    placeholder="e.g. Flat 302, Sai Krishna Enclave"
+                    value={doorNo}
+                    onChange={(e) => setDoorNo(e.target.value)}
                     required
                     className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Delivery Speed Preference</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Street, Area or Colony *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 4th Main Road, Gandhi Nagar"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                    required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
+                  />
+                </div>
+              </div>
+
+              {/* Landmark & Pincode */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Landmark / Nearby (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Near Water Tank or Opposite Temple"
+                    value={landmark}
+                    onChange={(e) => setLandmark(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Postal Pincode (6 Digits) *
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    placeholder="e.g. 625001"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+                    required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
+                  />
+                </div>
+              </div>
+
+              {/* City & State */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    City / Town *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Madurai"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    State *
+                  </label>
+                  <select
+                    value={stateName}
+                    onChange={(e) => setStateName(e.target.value)}
+                    required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:border-[#0033B4]"
+                  >
+                    {INDIAN_STATES.map((st) => (
+                      <option key={st} value={st}>{st}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Contact Number & Delivery Preference */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Contact Mobile (For Courier Updates) *
+                  </label>
+                  <input
+                    type="tel"
+                    maxLength={10}
+                    placeholder="10-digit mobile number"
+                    value={contactNumber}
+                    onChange={(e) => setContactNumber(e.target.value.replace(/\D/g, ''))}
+                    required
+                    className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-[#0033B4]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Delivery Speed Preference
+                  </label>
                   <select
                     value={deliveryPreference}
                     onChange={(e) => setDeliveryPreference(e.target.value)}

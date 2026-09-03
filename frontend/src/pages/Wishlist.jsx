@@ -40,7 +40,6 @@ export default function Wishlist() {
       const baseVariant = product.variants[0];
       if (baseVariant.stock > 0) {
         addToCart(product, baseVariant, 1);
-        toggleWishlist(product);
       }
     }
   };
@@ -90,7 +89,7 @@ export default function Wishlist() {
                     className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center cursor-pointer text-red-500 shadow-sm z-10"
                     title="Remove from Wishlist"
                   >
-                    <Star size={18} fill="currentColor" />
+                    <Heart size={18} fill="currentColor" />
                   </button>
 
                   <img
