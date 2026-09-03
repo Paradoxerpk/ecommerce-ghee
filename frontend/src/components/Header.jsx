@@ -37,17 +37,12 @@ export default function Header() {
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm h-20 flex items-center">
       <div className="container mx-auto px-4 flex justify-between items-center w-full">
         {/* Brand Logo */}
-        <Link to="/" onClick={closeMenu} className="flex items-center gap-2 text-primary font-bold">
-          <svg viewBox="0 0 100 100" className="w-11 h-11 object-contain" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50,15 C75,15 80,45 80,60 C80,78 67,90 50,90 C33,90 20,78 20,60 C20,45 25,15 50,15 Z" fill="#F5C518" />
-            <path d="M50,22 C70,22 74,48 74,60 C74,74 63,84 50,84 C37,84 26,74 26,60 C26,48 30,22 50,22 Z" fill="#0033B4" />
-            <path d="M50,35 C58,35 62,42 62,50 C62,58 56,64 50,64 C44,64 38,58 38,50" fill="none" stroke="#F5C518" strokeWidth="4" strokeLinecap="round" />
-            <circle cx="50" cy="50" r="5" fill="#F5C518" />
-          </svg>
-          <div>
-            <span className="block text-xl font-extrabold text-[#0033B4] leading-tight">Sai KRISHNA</span>
-            <span className="block text-xs font-bold text-[#F5C518] tracking-widest uppercase leading-none">Ghee</span>
-          </div>
+        <Link to="/" onClick={closeMenu} className="flex items-center">
+          <img 
+            src="/logo.png" 
+            alt="Sai Krishna Ghee" 
+            className="h-12 md:h-14 w-auto object-contain py-1" 
+          />
         </Link>
 
         {/* Desktop Navigation Links */}
